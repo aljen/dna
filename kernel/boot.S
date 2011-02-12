@@ -96,7 +96,7 @@ gdt_flush:                                ; load gdt table
 .flush:
   ret
 
-idt_flush:
+idt_flush:                                ; load idt table
   mov   eax, [esp + 4]
   lidt  [eax]
   ret

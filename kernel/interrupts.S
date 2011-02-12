@@ -34,136 +34,141 @@ global isr20, isr21, isr22, isr23, isr24, isr25, isr26, isr27, isr28, isr29
 global isr30, isr31
 extern isr_handler
 
-%macro isr_noerrcode 1
-  cli
-  push  byte 0
-  push  byte %1
-  jmp   isr_common_stub
+%macro isr_noerrcode 1                  ; macro for interrupt without error code
+  cli                                   ; disable interrupts
+  push  byte 0                          ; push dummy error code
+  push  byte %1                         ; push interrupt index
+  jmp   isr_common_stub                 ; call common handler stub
 %endmacro
 
-%macro isr_errcode 1
-  cli
-  push  byte %1
-  jmp   isr_common_stub
+%macro isr_errcode 1                    ; macro for interrupt with error code
+  cli                                   ; disable interrupts
+  push  byte %1                         ; push interrupt index
+  jmp   isr_common_stub                 ; call common handler stub
 %endmacro
 
-isr00:
+isr00:                                  ; division by zero exception
   isr_noerrcode 0
 
-isr01:
+isr01:                                  ; debug exception
   isr_noerrcode 1
 
-isr02:
+isr02:                                  ; non maskable interrupt
   isr_noerrcode 2
 
-isr03:
+isr03:                                  ; breakpoint exception
   isr_noerrcode 3
 
-isr04:
+isr04:                                  ; into detected overflow
   isr_noerrcode 4
 
-isr05:
+isr05:                                  ; out of bounds exception
   isr_noerrcode 5
 
-isr06:
+isr06:                                  ; invalid opcode exception
   isr_noerrcode 6
 
-isr07:
+isr07:                                  ; no coprocessor exception
   isr_noerrcode 7
 
-isr08:
+isr08:                                  ; double fault
   isr_errcode 8
 
-isr09:
+isr09:                                  ; coprocessor segment overrun
   isr_noerrcode 9
 
-isr10:
+isr10:                                  ; bad tss
   isr_errcode 10
 
-isr11:
+isr11:                                  ; segment not present
   isr_errcode 11
 
-isr12:
+isr12:                                  ; stack fault
   isr_errcode 12
 
-isr13:
+isr13:                                  ; general protection fault
   isr_errcode 13
 
-isr14:
+isr14:                                  ; page fault
   isr_errcode 14
 
-isr15:
+isr15:                                  ; unknown interrupt exception
   isr_noerrcode 15
 
-isr16:
+isr16:                                  ; coprocessor fault
   isr_noerrcode 16
 
-isr17:
+isr17:                                  ; alignment check exception
   isr_noerrcode 17
 
-isr18:
+isr18:                                  ; machine check exception
   isr_noerrcode 18
 
-isr19:
+isr19:                                  ; reserved
   isr_noerrcode 19
 
-isr20:
+isr20:                                  ; reserved
   isr_noerrcode 20
 
-isr21:
+isr21:                                  ; reserved
   isr_noerrcode 21
 
-isr22:
+isr22:                                  ; reserved
   isr_noerrcode 22
 
-isr23:
+isr23:                                  ; reserved
   isr_noerrcode 23
 
-isr24:
+isr24:                                  ; reserved
   isr_noerrcode 24
 
-isr25:
+isr25:                                  ; reserved
   isr_noerrcode 25
 
-isr26:
+isr26:                                  ; reserved
   isr_noerrcode 26
 
-isr27:
+isr27:                                  ; reserved
   isr_noerrcode 27
 
-isr28:
+isr28:                                  ; reserved
   isr_noerrcode 28
 
-isr29:
+isr29:                                  ; reserved
   isr_noerrcode 29
 
-isr30:
+isr30:                                  ; reserved
   isr_noerrcode 30
 
-isr31:
+isr31:                                  ; reserved
   isr_noerrcode 31
 
 isr_common_stub:
-  pusha
+  pusha                                 ; pushes edi, esi, ebp, esp, eax, ebx
+                                        ; ecx, edx
 
-  mov   ax, ds
-  push  eax
+  mov   ax, ds                          ; lower 16bits of eax = ds
+  push  eax                             ; save the data segment descriptor
 
-  mov   ax, 0x10
+  mov   ax, 0x10                        ; load the kernel data segment
+                                        ; descriptor
   mov   ds, ax
   mov   es, ax
   mov   fs, ax
   mov   gs, ax
 
-  call  isr_handler
+  call  isr_handler                     ; call isr handler
 
-  pop   eax
+  pop   eax                             ; reload the original data segment
+                                        ; descriptor
   mov   ds, ax
   mov   es, ax
   mov   fs, ax
   mov   gs, ax
 
-  popa
-  add   esp, 8
-  sti
-  iret
+  popa                                  ; pops edi, esi, ebp, esp, eax, ebx
+                                        ; ecx, edx
+  add   esp, 8                          ; cleans up pushed error code and
+                                        ; interrupt index
+  sti                                   ; enable interrupts
+  iret                                  ; pop cs, eip, eflags, ss, esp
