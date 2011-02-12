@@ -1,5 +1,5 @@
 #ifndef MULTIBOOT_H
-#define	MULTIBOOT_H
+#define MULTIBOOT_H
 
 // How many bytes from the start of the file we search for the header.
 #define MULTIBOOT_SEARCH                        8192
