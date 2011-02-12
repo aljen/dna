@@ -73,18 +73,19 @@ isr_handler(registers_t registers)
 {
   kprintf("*** KERNEL PANIC! ***\n");
   kprintf("Unhandled interrupt 0x%1x ('%s')\n",
-      registers.int_no, exception_descriptions[registers.int_no]);
-  kprintf("Error code: 0x%4x\n", registers.err_code);
-  kprintf("eax: 0x%4x esi: 0x%4x ebp: 0x%4x\n",
-      registers.eax, registers.esi, registers.ebp);
-  kprintf("ebx: 0x%4x edi: 0x%4x  cs: 0x%4x\n",
-      registers.ebx, registers.edi, registers.cs);
+    registers.int_no, exception_descriptions[registers.int_no]);
+  if (registers.int_no == 8 || (registers.int_no >= 10
+      && registers.int_no <= 14)) {
+    kprintf("Error code: 0x%4x\n", registers.err_code);
+  }
+  kprintf("eax: 0x%4x esi: 0x%4x ebp: 0x%4x eflags: 0x%4x\n",
+    registers.eax, registers.esi, registers.ebp, registers.eflags);
+  kprintf("ebx: 0x%4x edi: 0x%4x  cs: 0x%4x usersp: 0x%4x\n",
+    registers.ebx, registers.edi, registers.cs, registers.usersp);
   kprintf("ecx: 0x%4x esp: 0x%4x  ds: 0x%4x\n",
-      registers.ecx, registers.esp, registers.ds);
+    registers.ecx, registers.esp, registers.ds);
   kprintf("edx: 0x%4x eip: 0x%4x  ss: 0x%4x\n",
-      registers.edx, registers.eip, registers.ss);
-  kprintf("eflags: 0x%4x usersp: 0x%4x\n",
-      registers.eflags, registers.usersp);
+    registers.edx, registers.eip, registers.ss);
 
   for (;;)
     __asm__ __volatile__("hlt");
