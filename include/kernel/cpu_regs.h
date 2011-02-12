@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: isr.h
+// File: cpu_regs.h
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
 //
@@ -28,22 +28,36 @@
 // IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef KERNEL_ISR_H
-#define KERNEL_ISR_H
+#ifndef KERNEL_CPU_REGS_H
+#define KERNEL_CPU_REGS_H
 
 #include <types.h>
-#include <cpu_regs.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const char* exception_descriptions[32];
-
-void isr_handler(registers_t registers);
+typedef struct registers_t {
+  uint32_t ds;
+  uint32_t edi;
+  uint32_t esi;
+  uint32_t ebp;
+  uint32_t esp;
+  uint32_t ebx;
+  uint32_t edx;
+  uint32_t ecx;
+  uint32_t eax;
+  uint32_t int_no;
+  uint32_t err_code;
+  uint32_t eip;
+  uint32_t cs;
+  uint32_t eflags;
+  uint32_t usersp;
+  uint32_t ss;
+} registers_t;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // KERNEL_ISR_H
+#endif // KERNEL_CPU_REGS_H
