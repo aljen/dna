@@ -44,10 +44,10 @@ typedef long long int64_t;
 
 typedef volatile unsigned char vuint8_t;
 typedef volatile char vint8_t;
-typedef volatile unsigned int vuint16_t;
-typedef volatile int vint16_t;
-typedef volatile unsigned long vuint32_t;
-typedef volatile long vint32_t;
+typedef volatile unsigned short vuint16_t;
+typedef volatile short vint16_t;
+typedef volatile unsigned int vuint32_t;
+typedef volatile int vint32_t;
 typedef volatile unsigned long long vuint64_t;
 typedef volatile long long vint64_t;
 
