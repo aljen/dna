@@ -35,11 +35,14 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/gdt.o \
+	${OBJECTDIR}/pic.o \
 	${OBJECTDIR}/console.o \
 	${OBJECTDIR}/idt.o \
 	${OBJECTDIR}/isr.o \
 	${OBJECTDIR}/utils.o \
+	${OBJECTDIR}/irqs.o \
 	${OBJECTDIR}/kmain.o \
+	${OBJECTDIR}/irq.o \
 	${OBJECTDIR}/interrupts.o \
 	${OBJECTDIR}/cpp_support.o
 
@@ -77,6 +80,11 @@ ${OBJECTDIR}/gdt.o: gdt.c
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/gdt.o gdt.c
 
+${OBJECTDIR}/pic.o: pic.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/pic.o pic.c
+
 ${OBJECTDIR}/console.o: console.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -97,10 +105,19 @@ ${OBJECTDIR}/utils.o: utils.c
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.c
 
+${OBJECTDIR}/irqs.o: irqs.S 
+	${MKDIR} -p ${OBJECTDIR}
+	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/irqs.o irqs.S
+
 ${OBJECTDIR}/kmain.o: kmain.cc 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmain.o kmain.cc
+
+${OBJECTDIR}/irq.o: irq.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/irq.o irq.c
 
 ${OBJECTDIR}/interrupts.o: interrupts.S 
 	${MKDIR} -p ${OBJECTDIR}

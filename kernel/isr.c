@@ -38,22 +38,22 @@ exception_descriptions[32] = {
   "Debug",                          //  1
   "Non maskable interrupt",         //  2
   "Breakpoint",                     //  3
-  "Into detected overflow",         //  4
+  "Overflow",                       //  4
   "Out of bounds",                  //  5
   "Invalid opcode",                 //  6
-  "No coprocessor",                 //  7
+  "Device not available",           //  7
   "Double fault",                   //  8
   "Coprocessor segment overrun",    //  9
-  "Bad TSS",                        // 10
+  "Invalid TSS",                    // 10
   "Segment not present",            // 11
-  "Stack fault",                    // 12
+  "Stack-segment fault",            // 12
   "General protection fault",       // 13
   "Page fault",                     // 14
   "Unknow interrupt",               // 15
-  "Coprocessor fault",              // 16
+  "x87 floating-point exception",   // 16
   "Alignment check",                // 17
   "Machine check",                  // 18
-  "Reserved"                        // 19
+  "SIMD floating-point exception"   // 19
   "Reserved"                        // 20
   "Reserved"                        // 21
   "Reserved"                        // 22
@@ -64,7 +64,7 @@ exception_descriptions[32] = {
   "Reserved"                        // 27
   "Reserved"                        // 28
   "Reserved"                        // 29
-  "Reserved"                        // 30
+  "Security exception"              // 30
   "Reserved"                        // 31
 };
 

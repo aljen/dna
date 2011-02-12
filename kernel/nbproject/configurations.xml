@@ -6,10 +6,14 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>../include/kernel/console.h</itemPath>
+      <itemPath>../include/kernel/cpu_regs.h</itemPath>
+      <itemPath>../include/kernel/cpuid.h</itemPath>
       <itemPath>../include/kernel/gdt.h</itemPath>
       <itemPath>../include/kernel/idt.h</itemPath>
+      <itemPath>../include/kernel/irq.h</itemPath>
       <itemPath>../include/kernel/isr.h</itemPath>
       <itemPath>../include/kernel/multiboot.h</itemPath>
+      <itemPath>../include/kernel/pic.h</itemPath>
       <itemPath>../include/kernel/types.h</itemPath>
       <itemPath>../include/kernel/utils.h</itemPath>
     </logicalFolder>
@@ -28,8 +32,11 @@
       <itemPath>gdt.c</itemPath>
       <itemPath>idt.c</itemPath>
       <itemPath>interrupts.S</itemPath>
+      <itemPath>irq.c</itemPath>
+      <itemPath>irqs.S</itemPath>
       <itemPath>isr.c</itemPath>
       <itemPath>kmain.cc</itemPath>
+      <itemPath>pic.c</itemPath>
       <itemPath>utils.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"

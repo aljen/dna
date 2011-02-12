@@ -29,6 +29,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <idt.h>
+#include <pic.h>
+#include <irq.h>
 #include <utils.h>
 
 static idt_entry_t sIdtEntries[256];
@@ -52,6 +54,8 @@ idt_init()
   sIdt.base = (uint32_t)&sIdtEntries;
 
   memset(&sIdtEntries, 0, sizeof(idt_entry_t) * 256);
+
+  pic_remap();
 
   idt_set_gate( 0, (uint32_t)isr00, 0x08, 0x8e);
   idt_set_gate( 1, (uint32_t)isr01, 0x08, 0x8e);
@@ -85,6 +89,23 @@ idt_init()
   idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8e);
   idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8e);
   idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8e);
+
+  idt_set_gate(32, (uint32_t)irq00, 0x08, 0x8e);
+  idt_set_gate(33, (uint32_t)irq01, 0x08, 0x8e);
+  idt_set_gate(34, (uint32_t)irq02, 0x08, 0x8e);
+  idt_set_gate(35, (uint32_t)irq03, 0x08, 0x8e);
+  idt_set_gate(36, (uint32_t)irq04, 0x08, 0x8e);
+  idt_set_gate(37, (uint32_t)irq05, 0x08, 0x8e);
+  idt_set_gate(38, (uint32_t)irq06, 0x08, 0x8e);
+  idt_set_gate(39, (uint32_t)irq07, 0x08, 0x8e);
+  idt_set_gate(40, (uint32_t)irq08, 0x08, 0x8e);
+  idt_set_gate(41, (uint32_t)irq09, 0x08, 0x8e);
+  idt_set_gate(42, (uint32_t)irq10, 0x08, 0x8e);
+  idt_set_gate(43, (uint32_t)irq11, 0x08, 0x8e);
+  idt_set_gate(44, (uint32_t)irq12, 0x08, 0x8e);
+  idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8e);
+  idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8e);
+  idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8e);
 
   idt_flush((uint32_t)&sIdt);
 }
