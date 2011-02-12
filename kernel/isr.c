@@ -1,0 +1,91 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: isr.c
+// Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// * Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// * Neither the name of Artur Wyszyński nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+// OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+// IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+////////////////////////////////////////////////////////////////////////////////
+
+#include <isr.h>
+#include <console.h>
+#include <utils.h>
+
+const char*
+exception_descriptions[32] = {
+  "Division by zero",               //  0
+  "Debug",                          //  1
+  "Non maskable interrupt",         //  2
+  "Breakpoint",                     //  3
+  "Into detected overflow",         //  4
+  "Out of bounds",                  //  5
+  "Invalid opcode",                 //  6
+  "No coprocessor",                 //  7
+  "Double fault",                   //  8
+  "Coprocessor segment overrun",    //  9
+  "Bad TSS",                        // 10
+  "Segment not present",            // 11
+  "Stack fault",                    // 12
+  "General protection fault",       // 13
+  "Page fault",                     // 14
+  "Unknow interrupt",               // 15
+  "Coprocessor fault",              // 16
+  "Alignment check",                // 17
+  "Machine check",                  // 18
+  "Reserved"                        // 19
+  "Reserved"                        // 20
+  "Reserved"                        // 21
+  "Reserved"                        // 22
+  "Reserved"                        // 23
+  "Reserved"                        // 24
+  "Reserved"                        // 25
+  "Reserved"                        // 26
+  "Reserved"                        // 27
+  "Reserved"                        // 28
+  "Reserved"                        // 29
+  "Reserved"                        // 30
+  "Reserved"                        // 31
+};
+
+void
+isr_handler(registers_t registers)
+{
+  kprintf("*** KERNEL PANIC! ***\n");
+  kprintf("Unhandled interrupt 0x%1x ('%s')\n",
+      registers.int_no, exception_descriptions[registers.int_no]);
+  kprintf("Error code: 0x%4x\n", registers.err_code);
+  kprintf("eax: 0x%4x esi: 0x%4x ebp: 0x%4x\n",
+      registers.eax, registers.esi, registers.ebp);
+  kprintf("ebx: 0x%4x edi: 0x%4x  cs: 0x%4x\n",
+      registers.ebx, registers.edi, registers.cs);
+  kprintf("ecx: 0x%4x esp: 0x%4x  ds: 0x%4x\n",
+      registers.ecx, registers.esp, registers.ds);
+  kprintf("edx: 0x%4x eip: 0x%4x  ss: 0x%4x\n",
+      registers.edx, registers.eip, registers.ss);
+  kprintf("eflags: 0x%4x usersp: 0x%4x\n",
+      registers.eflags, registers.usersp);
+
+  for (;;)
+    __asm__ __volatile__("hlt");
+}
