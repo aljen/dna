@@ -1,0 +1,5 @@
+boot: floppy
+floppya: 1_44="C:\Develop\DNA\image\floppy.img", status=inserted
+log: C:\Develop\DNA\image\kernel_log.txt
+clock: sync=realtime
+cpu: ips=500000
