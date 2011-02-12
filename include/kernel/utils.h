@@ -34,7 +34,6 @@
 #include <types.h>
 
 #define TEST_BIT(flags, bit)      ((flags) & (1 << (bit)))
-#define NULL                      ((void*)0)
 
 #ifdef __cplusplus
 extern "C" {

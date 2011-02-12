@@ -31,6 +31,8 @@
 #ifndef KERNEL_TYPES_H
 #define KERNEL_TYPES_H
 
+#define NULL ((void*)0)
+
 typedef unsigned char uint8_t;
 typedef char int8_t;
 typedef unsigned short uint16_t;
