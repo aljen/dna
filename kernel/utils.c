@@ -73,6 +73,12 @@ out8(uint16_t port, uint8_t data)
   __asm__ __volatile__("outb %1, %0" : : "dN"((unsigned short)port), "a"(data));
 }
 
+void
+io_wait()
+{
+  __asm__ __volatile__("outb %%al, $0x80" : : "a"(0));
+}
+
 void  __attribute__((noreturn))
 panic(const char* format, ...)
 {
