@@ -50,8 +50,6 @@ kmain(uint32_t magic, multiboot_info_t* info)
   gdt_init();
   idt_init();
 
-  __asm__ __volatile__("int $0x04");
-
   kprintf("Loading...");
 
   for (;;) {}
