@@ -31,7 +31,7 @@
 #ifndef KERNEL_GDT_H
 #define KERNEL_GDT_H
 
-#include <types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

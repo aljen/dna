@@ -31,7 +31,7 @@
 #ifndef KERNEL_UTILS_H
 #define KERNEL_UTILS_H
 
-#include <types.h>
+#include <stdint.h>
 
 #define TEST_BIT(flags, bit)      ((flags) & (1 << (bit)))
 

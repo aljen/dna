@@ -31,7 +31,7 @@
 #ifndef KERNEL_TIMER_H
 #define KERNEL_TIMER_H
 
-#include <types.h>
+#include <stdint.h>
 
 #define PIT_DATA0   0x40  // PIT io data port for channel 0
 #define PIT_DATA1   0x41  // PIT io data port for channel 1

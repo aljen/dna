@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: types.h
+// File: size_t.h
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
 //
@@ -28,27 +28,12 @@
 // IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef KERNEL_TYPES_H
-#define KERNEL_TYPES_H
+#ifndef _SIZE_T_H
+#define _SIZE_T_H
 
-#define NULL ((void*)0)
+#if !defined(__ssize_t__)
+# define __ssize_t__
+typedef long signed int	ssize_t;
+#endif
 
-typedef unsigned char uint8_t;
-typedef char int8_t;
-typedef unsigned short uint16_t;
-typedef short int16_t;
-typedef unsigned int uint32_t;
-typedef int int32_t;
-typedef unsigned long long uint64_t;
-typedef long long int64_t;
-
-typedef volatile unsigned char vuint8_t;
-typedef volatile char vint8_t;
-typedef volatile unsigned short vuint16_t;
-typedef volatile short vint16_t;
-typedef volatile unsigned int vuint32_t;
-typedef volatile int vint32_t;
-typedef volatile unsigned long long vuint64_t;
-typedef volatile long long vint64_t;
-
-#endif // KERNEL_TYPES_H
+#endif // _SIZE_T_H

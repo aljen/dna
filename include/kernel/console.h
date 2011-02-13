@@ -31,7 +31,7 @@
 #ifndef KERNEL_CONSOLE_H
 #define KERNEL_CONSOLE_H
 
-#include <types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

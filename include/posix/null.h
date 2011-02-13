@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: idt.h
+// File: null.h
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
 //
@@ -28,66 +28,11 @@
 // IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef KERNEL_IDT_H
-#define KERNEL_IDT_H
+#ifndef _NULL_H
+#define _NULL_H
 
-#include <stdint.h>
+#ifndef NULL
+#define NULL  0
+#endif // NULL
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct idt_entry_t {
-  uint16_t base_low;
-  uint16_t selector;
-  uint8_t always0;
-  uint8_t flags;
-  uint16_t base_high;
-} __attribute__((packed)) idt_entry_t;
-
-typedef struct idt_ptr_t {
-  uint16_t limit;
-  uint32_t base;
-} __attribute__((packed)) idt_ptr_t;
-
-void idt_init();
-
-extern void idt_flush(uint32_t ptr);
-extern void isr00();
-extern void isr01();
-extern void isr02();
-extern void isr03();
-extern void isr04();
-extern void isr05();
-extern void isr06();
-extern void isr07();
-extern void isr08();
-extern void isr09();
-extern void isr10();
-extern void isr11();
-extern void isr12();
-extern void isr13();
-extern void isr14();
-extern void isr15();
-extern void isr16();
-extern void isr17();
-extern void isr18();
-extern void isr19();
-extern void isr20();
-extern void isr21();
-extern void isr22();
-extern void isr23();
-extern void isr24();
-extern void isr25();
-extern void isr26();
-extern void isr27();
-extern void isr28();
-extern void isr29();
-extern void isr30();
-extern void isr31();
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // KERNEL_IDT_H
+#endif // _NULL_H

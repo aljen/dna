@@ -31,7 +31,7 @@
 #ifndef KERNEL_CPU_REGS_H
 #define KERNEL_CPU_REGS_H
 
-#include <types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

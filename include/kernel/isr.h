@@ -31,7 +31,7 @@
 #ifndef KERNEL_ISR_H
 #define KERNEL_ISR_H
 
-#include <types.h>
+#include <stdint.h>
 #include <cpu_regs.h>
 
 #ifdef __cplusplus
