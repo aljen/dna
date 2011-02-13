@@ -42,6 +42,11 @@ extern const char* exception_descriptions[32];
 
 void isr_handler(registers_t registers);
 
+void unhandled_interrupt(registers_t registers);
+
+void enable_interrupts();
+void disable_interrupts();
+
 #ifdef __cplusplus
 }
 #endif

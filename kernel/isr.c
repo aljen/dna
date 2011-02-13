@@ -31,6 +31,9 @@
 #include <isr.h>
 #include <console.h>
 #include <utils.h>
+#include <irq.h>
+
+extern isr_t sInterruptHandlers[256];
 
 const char*
 exception_descriptions[32] = {
@@ -71,6 +74,18 @@ exception_descriptions[32] = {
 void
 isr_handler(registers_t registers)
 {
+  if (sInterruptHandlers[registers.int_no] != 0) {
+    isr_t handler = sInterruptHandlers[registers.int_no];
+    handler(registers);
+  } else {
+    kprintf("recieved interrupt: %d\n", registers.int_no);
+    unhandled_interrupt(registers);
+  }
+}
+
+void
+unhandled_interrupt(registers_t registers)
+{
   kprintf("*** KERNEL PANIC! ***\n");
   kprintf("Unhandled interrupt 0x%1x ('%s')\n",
     registers.int_no, exception_descriptions[registers.int_no]);
@@ -89,4 +104,16 @@ isr_handler(registers_t registers)
 
   for (;;)
     __asm__ __volatile__("hlt");
+}
+
+void
+enable_interrupts()
+{
+  __asm__ __volatile__("sti");
+}
+
+void
+disable_interrupts()
+{
+  __asm__ __volatile__("cli");
 }

@@ -73,6 +73,7 @@ extern void irq15();
 
 typedef void (*isr_t)(registers_t);
 
+void irq_init();
 void irq_handler(registers_t registers);
 
 void register_interrupt_handler(uint8_t number, isr_t handler);

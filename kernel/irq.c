@@ -1,4 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
+
+#include "isr.h"
+
 // File: irq.c
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
@@ -31,8 +34,15 @@
 #include <irq.h>
 #include <pic.h>
 #include <utils.h>
+#include <console.h>
 
-static isr_t sInterruptHandlers[256];
+isr_t sInterruptHandlers[256];
+
+void
+irq_init()
+{
+  memset(&sInterruptHandlers, 0, sizeof(isr_t) * 256);
+}
 
 void
 irq_handler(registers_t registers)
@@ -47,6 +57,9 @@ irq_handler(registers_t registers)
   if (sInterruptHandlers[registers.int_no] != 0) {
     isr_t handler = sInterruptHandlers[registers.int_no];
     handler(registers);
+  } else {
+    kprintf("recieved irq: %d\n", registers.int_no);
+    unhandled_interrupt(registers);
   }
 }
 

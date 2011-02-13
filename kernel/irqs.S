@@ -91,11 +91,12 @@ irq_common_stub:
   pusha                                 ; pushes edi, esi, ebp, esp, eax, ebx
                                         ; ecx, edx
 
-  mov   ax, 0x10                        ; lower 16bits of eax = ds
+  mov   ax, ds                          ; lower 16bits of eax = ds
   push  eax                             ; save the data segment descriptor
 
-  mov   ds, ax                          ; load the kernel data segment
+  mov   ax, 0x10                        ; load the kernel data segment
                                         ; descriptor
+  mov   ds, ax
   mov   es, ax
   mov   fs, ax
   mov   gs, ax
