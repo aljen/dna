@@ -97,8 +97,7 @@ void  __attribute__((noreturn))
 panic(const char* format, ...)
 {
   (void)format;
-  kprintf("*** KERNEL PANIC! ***\n");
-  kprintf("%s\n", format);
+  kprintf(KERROR "*** KERNEL PANIC! %s ***\n", format);
   for (;;)
     __asm__ __volatile__("hlt");
 }
