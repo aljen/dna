@@ -95,7 +95,8 @@ irq_common_stub:
   push  eax                             ; save the data segment descriptor
 
   mov   ax, 0x10                        ; load the kernel data segment
-                                        ; descriptor
+                                        ; descriptor, 0x10 - 3rd entry in gdt
+                                        ; table
   mov   ds, ax
   mov   es, ax
   mov   fs, ax
