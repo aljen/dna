@@ -14,6 +14,7 @@
       <itemPath>../include/kernel/isr.h</itemPath>
       <itemPath>../include/kernel/multiboot.h</itemPath>
       <itemPath>../include/kernel/pic.h</itemPath>
+      <itemPath>../include/kernel/timer.h</itemPath>
       <itemPath>../include/kernel/types.h</itemPath>
       <itemPath>../include/kernel/utils.h</itemPath>
     </logicalFolder>
@@ -37,6 +38,7 @@
       <itemPath>isr.c</itemPath>
       <itemPath>kmain.cc</itemPath>
       <itemPath>pic.c</itemPath>
+      <itemPath>timer.c</itemPath>
       <itemPath>utils.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"

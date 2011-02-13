@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/timer.o \
 	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/gdt.o \
 	${OBJECTDIR}/pic.o \
@@ -70,6 +71,11 @@ LDLIBSOPTIONS=
 dist/Release/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/CrossTools-Windows
 	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/timer.o: timer.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
 
 ${OBJECTDIR}/boot.o: boot.S 
 	${MKDIR} -p ${OBJECTDIR}
