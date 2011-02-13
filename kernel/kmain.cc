@@ -57,7 +57,7 @@ kmain(uint32_t magic, multiboot_info_t* info)
   enable_interrupts();
 
   // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
-  timer_init(100); // initialize timer to 50hz
+  timer_init(100); // initialize timer to 100Hz
 
   kprintf("Loading...");
 
