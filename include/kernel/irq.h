@@ -77,6 +77,7 @@ void irq_init();
 void irq_handler(registers_t registers);
 
 void register_interrupt_handler(uint8_t number, isr_t handler);
+void unregister_interrupt_handler(uint8_t number);
 
 #ifdef __cplusplus
 }
