@@ -29,7 +29,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 global loader, cpu_hang, gdt_flush, idt_flush
-
 extern start_ctors, end_ctors, start_dtors, end_dtors, kmain
 
 MODULE_ALIGN  equ 1 << 0                  ; kernel and modules are aligned
