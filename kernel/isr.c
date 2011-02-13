@@ -78,7 +78,7 @@ isr_handler(registers_t registers)
     isr_t handler = sInterruptHandlers[registers.int_no];
     handler(registers);
   } else {
-    kprintf(KINFO "recieved interrupt: %d\n", registers.int_no);
+    kprintf(KLOG "recieved interrupt: %d\n", registers.int_no);
     unhandled_interrupt(registers);
   }
 }
