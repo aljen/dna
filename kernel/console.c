@@ -186,3 +186,19 @@ kprintf(const char* format, ...)
     }
   }
 }
+
+void
+console_moveto(uint8_t x, uint8_t y)
+{
+  sPosX = x;
+  sPosY = y;
+}
+
+void
+console_getposition(uint8_t *x, uint8_t *y)
+{
+  if (x != NULL)
+    *x = sPosX;
+  if (y != NULL)
+    *y = sPosY;
+}

@@ -64,6 +64,8 @@ void console_clear();
 int itoa(char* buf, int base, int d);
 void console_putchar(int c);
 void kprintf(const char* format, ...);
+void console_moveto(uint8_t x, uint8_t y);
+void console_getposition(uint8_t *x, uint8_t *y);
 
 #ifdef __cplusplus
 }
