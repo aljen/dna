@@ -37,38 +37,38 @@ extern isr_handler
 %macro isr_noerrcode 1                  ; macro for interrupt without error code
   cli                                   ; disable interrupts
   push  byte 0                          ; push dummy error code
-  push  byte %1                         ; push interrupt index
+  push  byte %1                         ; push interrupt number
   jmp   isr_common_stub                 ; call common handler stub
 %endmacro
 
 %macro isr_errcode 1                    ; macro for interrupt with error code
   cli                                   ; disable interrupts
-  push  byte %1                         ; push interrupt index
+  push  byte %1                         ; push interrupt number
   jmp   isr_common_stub                 ; call common handler stub
 %endmacro
 
-isr00:                                  ; division by zero exception
+isr00:                                  ; division by zero
   isr_noerrcode 0
 
-isr01:                                  ; debug exception
+isr01:                                  ; debug
   isr_noerrcode 1
 
 isr02:                                  ; non maskable interrupt
   isr_noerrcode 2
 
-isr03:                                  ; breakpoint exception
+isr03:                                  ; breakpoint
   isr_noerrcode 3
 
-isr04:                                  ; into detected overflow
+isr04:                                  ; overflow
   isr_noerrcode 4
 
-isr05:                                  ; out of bounds exception
+isr05:                                  ; out of bounds
   isr_noerrcode 5
 
-isr06:                                  ; invalid opcode exception
+isr06:                                  ; invalid opcode
   isr_noerrcode 6
 
-isr07:                                  ; no coprocessor exception
+isr07:                                  ; device not available
   isr_noerrcode 7
 
 isr08:                                  ; double fault
@@ -77,13 +77,13 @@ isr08:                                  ; double fault
 isr09:                                  ; coprocessor segment overrun
   isr_noerrcode 9
 
-isr10:                                  ; bad tss
+isr10:                                  ; invalid tss
   isr_errcode 10
 
 isr11:                                  ; segment not present
   isr_errcode 11
 
-isr12:                                  ; stack fault
+isr12:                                  ; stack-segment fault
   isr_errcode 12
 
 isr13:                                  ; general protection fault
@@ -92,19 +92,19 @@ isr13:                                  ; general protection fault
 isr14:                                  ; page fault
   isr_errcode 14
 
-isr15:                                  ; unknown interrupt exception
+isr15:                                  ; unknown interrupt
   isr_noerrcode 15
 
-isr16:                                  ; coprocessor fault
+isr16:                                  ; x87 floating-point exception
   isr_noerrcode 16
 
-isr17:                                  ; alignment check exception
+isr17:                                  ; alignment check
   isr_noerrcode 17
 
-isr18:                                  ; machine check exception
+isr18:                                  ; machine check
   isr_noerrcode 18
 
-isr19:                                  ; reserved
+isr19:                                  ; SIMD floating-point exception
   isr_noerrcode 19
 
 isr20:                                  ; reserved
@@ -137,7 +137,7 @@ isr28:                                  ; reserved
 isr29:                                  ; reserved
   isr_noerrcode 29
 
-isr30:                                  ; reserved
+isr30:                                  ; security exception
   isr_noerrcode 30
 
 isr31:                                  ; reserved
@@ -151,7 +151,8 @@ isr_common_stub:
   push  eax                             ; save the data segment descriptor
 
   mov   ax, 0x10                        ; load the kernel data segment
-                                        ; descriptor
+                                        ; descriptor, 0x10 - 3rd entry in gdt
+                                        ; table
   mov   ds, ax
   mov   es, ax
   mov   fs, ax
