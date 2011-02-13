@@ -75,7 +75,7 @@ dist/Release/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 ${OBJECTDIR}/timer.o: timer.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
 
 ${OBJECTDIR}/boot.o: boot.S 
 	${MKDIR} -p ${OBJECTDIR}
@@ -84,32 +84,32 @@ ${OBJECTDIR}/boot.o: boot.S
 ${OBJECTDIR}/gdt.o: gdt.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/gdt.o gdt.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/gdt.o gdt.c
 
 ${OBJECTDIR}/pic.o: pic.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/pic.o pic.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/pic.o pic.c
 
 ${OBJECTDIR}/console.o: console.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/console.o console.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/console.o console.c
 
 ${OBJECTDIR}/idt.o: idt.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/idt.o idt.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/idt.o idt.c
 
 ${OBJECTDIR}/isr.o: isr.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/isr.o isr.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/isr.o isr.c
 
 ${OBJECTDIR}/utils.o: utils.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.c
 
 ${OBJECTDIR}/irqs.o: irqs.S 
 	${MKDIR} -p ${OBJECTDIR}
@@ -118,12 +118,12 @@ ${OBJECTDIR}/irqs.o: irqs.S
 ${OBJECTDIR}/kmain.o: kmain.cc 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmain.o kmain.cc
+	$(COMPILE.cc) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmain.o kmain.cc
 
 ${OBJECTDIR}/irq.o: irq.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/irq.o irq.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/irq.o irq.c
 
 ${OBJECTDIR}/interrupts.o: interrupts.S 
 	${MKDIR} -p ${OBJECTDIR}
@@ -132,7 +132,7 @@ ${OBJECTDIR}/interrupts.o: interrupts.S
 ${OBJECTDIR}/cpp_support.o: cpp_support.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../include/kernel -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/cpp_support.o cpp_support.c
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/cpp_support.o cpp_support.c
 
 # Subprojects
 .build-subprojects:
