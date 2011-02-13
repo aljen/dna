@@ -45,6 +45,8 @@ uint16_t strlen(const char* str);
 
 uint8_t in8(uint16_t port);
 void out8(uint16_t port, uint8_t data);
+uint16_t in16(uint16_t port);
+void out16(uint16_t port, uint16_t data);
 void io_wait();
 
 void  __attribute__((noreturn)) panic(const char* format, ...);
