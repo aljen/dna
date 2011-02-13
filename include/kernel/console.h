@@ -55,7 +55,9 @@ static const uint8_t COLOR_LIGHT_BROWN     = 14;
 static const uint8_t COLOR_WHITE           = 15;
 
 #define KERROR  "[ERROR] "
+#define KWARN   "[ WARN] "
 #define KINFO   "[ INFO] "
+#define KLOG    "[  LOG] "
 
 void console_init();
 void console_clear();
