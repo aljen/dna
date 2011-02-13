@@ -58,8 +58,9 @@ irq_handler(registers_t registers)
     isr_t handler = sInterruptHandlers[registers.int_no];
     handler(registers);
   } else {
-    kprintf("recieved irq: %d\n", registers.int_no);
-    unhandled_interrupt(registers);
+//    kprintf("recieved irq: %d (original irq: %d)\n", registers.int_no,
+//        registers.int_no - 32);
+//    unhandled_interrupt(registers);
   }
 }
 
