@@ -31,6 +31,9 @@
 #include <multiboot.h>
 #include <gdt.h>
 #include <idt.h>
+#include <irq.h>
+#include <isr.h>
+#include <timer.h>
 #include <console.h>
 #include <utils.h>
 
@@ -49,6 +52,12 @@ kmain(uint32_t magic, multiboot_info_t* info)
 
   gdt_init();
   idt_init();
+  irq_init();
+
+  enable_interrupts();
+
+  // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
+  timer_init(100); // initialize timer to 50hz
 
   kprintf("Loading...");
 
