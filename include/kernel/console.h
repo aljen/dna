@@ -54,6 +54,9 @@ static const uint8_t COLOR_LIGHT_MAGENTA   = 13;
 static const uint8_t COLOR_LIGHT_BROWN     = 14;
 static const uint8_t COLOR_WHITE           = 15;
 
+#define KERROR  "[ERROR] "
+#define KINFO   "[ INFO] "
+
 void console_init();
 void console_clear();
 int itoa(char* buf, int base, int d);
