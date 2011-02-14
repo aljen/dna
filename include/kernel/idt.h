@@ -37,17 +37,19 @@
 extern "C" {
 #endif
 
+#define MAX_IDT_GATES 256
+
 typedef struct idt_entry_t {
-  uint16_t base_low;
-  uint16_t selector;
-  uint8_t always0;
-  uint8_t flags;
-  uint16_t base_high;
+  uint16_t base_low;  // lower 16bits of the address to jump to on interrupt
+  uint16_t selector;  // kernel segment selector
+  uint8_t always0;    // always 0
+  uint8_t flags;      // flags
+  uint16_t base_high; // upper 16bits of the address to jump to.
 } __attribute__((packed)) idt_entry_t;
 
 typedef struct idt_ptr_t {
-  uint16_t limit;
-  uint32_t base;
+  uint16_t limit;     // upper 16bits of all interrupts limits
+  uint32_t base;      // address of the first entry in idt table
 } __attribute__((packed)) idt_ptr_t;
 
 void idt_init();

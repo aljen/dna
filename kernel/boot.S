@@ -81,23 +81,24 @@ cpu_hang:                                 ; hang with infinite loop
   hlt
   jmp .hang
 
-gdt_flush:                                ; load gdt table
-  mov   eax, [esp + 4]
-  lgdt  [eax]
+gdt_flush:
+  mov   eax, [esp + 4]                    ; get pointer to the gdt table
+  lgdt  [eax]                             ; load the gdt table
 
-  mov   ax, 0x10
-  mov   ds, ax
+  mov   ax, 0x10                          ; set data segment to kernel data
+  mov   ds, ax                            ; 0x10 - third entry in our gdt
   mov   es, ax
   mov   fs, ax
   mov   gs, ax
   mov   ss, ax
-  jmp   0x08:.flush
+  jmp   0x08:.flush                       ; set code segment by doing a far jump
+                                          ; 0x08 - second entry in our gdt
 .flush:
   ret
 
-idt_flush:                                ; load idt table
-  mov   eax, [esp + 4]
-  lidt  [eax]
+idt_flush:
+  mov   eax, [esp + 4]                    ; get pointer to the idt table
+  lidt  [eax]                             ; load the idt table
   ret
 
 section .bss

@@ -33,10 +33,10 @@
 #include <utils.h>
 #include <irq.h>
 
-extern isr_t sInterruptHandlers[256];
+extern isr_t sInterruptHandlers[MAX_INTERRUPT_HANDLERS];
 
 const char*
-exception_descriptions[32] = {
+exception_descriptions[RESERVED_INTERRUPTS] = {
   "Division by zero",               //  0
   "Debug",                          //  1
   "Non maskable interrupt",         //  2

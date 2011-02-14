@@ -37,18 +37,27 @@
 extern "C" {
 #endif
 
+enum gdt_segments {
+  NULL_SEGMENT = 0,
+  KERNEL_CODE_SEGMENT,
+  KERNEL_DATA_SEGMENT,
+  USER_CODE_SEGMENT,
+  USER_DATA_SEGMENT,
+  NUM_SEGMENTS
+};
+
 typedef struct gdt_entry_t {
-  uint16_t limit_low;
-  uint16_t base_low;
-  uint8_t base_middle;
-  uint8_t access;
-  uint8_t granularity;
-  uint8_t base_hight;
+  uint16_t limit_low;   // lower 16bits of the limit
+  uint16_t base_low;    // lower 16bits of the base address
+  uint8_t base_middle;  // middle 8bits of the base address
+  uint8_t access;       // access flags
+  uint8_t granularity;  // upper 8bits of the limit and granularity&size flags
+  uint8_t base_hight;   // upper 8bits of the base address
 } __attribute__((packed)) gdt_entry_t;
 
 typedef struct gdt_ptr_t {
-  uint16_t limit;
-  uint32_t base;
+  uint16_t limit;       // upper 16bits of all selector limits
+  uint32_t base;        // address of the first entry in gdt table
 } __attribute__((packed)) gdt_ptr_t;
 
 void gdt_init();

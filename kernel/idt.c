@@ -33,30 +33,38 @@
 #include <irq.h>
 #include <utils.h>
 
-static idt_entry_t sIdtEntries[256];
+static idt_entry_t sIdtEntries[MAX_IDT_GATES];
 static idt_ptr_t sIdt;
 
 static void
 idt_set_gate(uint8_t index, uint32_t base, uint16_t selector,
   uint8_t flags)
 {
+  // set lower 16bits of the address to jump to on interrupt
   sIdtEntries[index].base_low = base & 0xffff;
+  // set upper 16 bits of that address
   sIdtEntries[index].base_high = (base >> 16) & 0xffff;
+  // set kernel segment selector
   sIdtEntries[index].selector = selector;
   sIdtEntries[index].always0 = 0;
+  // set flags
   sIdtEntries[index].flags = flags;
 }
 
 void
 idt_init()
 {
-  sIdt.limit = sizeof(idt_entry_t) * 256 - 1;
+  sIdt.limit = sizeof(idt_entry_t) * MAX_IDT_GATES - 1;
   sIdt.base = (uint32_t)&sIdtEntries;
 
-  memset(&sIdtEntries, 0, sizeof(idt_entry_t) * 256);
+  memset(&sIdtEntries, 0, sizeof(idt_entry_t) * MAX_IDT_GATES);
 
-  pic_remap();
+  pic_remap(); // remap irqs
 
+  // 0x08 = kernel code gdt descriptor
+  // 0x8e = interrupt gate, ring0
+
+  // set first 32 interrupts for traps, faults & exceptions
   idt_set_gate( 0, (uint32_t)isr00, 0x08, 0x8e);
   idt_set_gate( 1, (uint32_t)isr01, 0x08, 0x8e);
   idt_set_gate( 2, (uint32_t)isr02, 0x08, 0x8e);
@@ -90,6 +98,7 @@ idt_init()
   idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8e);
   idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8e);
 
+  // set remapped irqs
   idt_set_gate(32, (uint32_t)irq00, 0x08, 0x8e);
   idt_set_gate(33, (uint32_t)irq01, 0x08, 0x8e);
   idt_set_gate(34, (uint32_t)irq02, 0x08, 0x8e);
@@ -107,5 +116,5 @@ idt_init()
   idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8e);
   idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8e);
 
-  idt_flush((uint32_t)&sIdt);
+  idt_flush((uint32_t)&sIdt); // reload the interrupts description table
 }
