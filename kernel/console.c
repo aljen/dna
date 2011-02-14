@@ -110,7 +110,7 @@ itoa(char* buf, int base, int d)
     int remainder = ud % divisor;
     *p++ = (remainder < 10) ? remainder + '0' : remainder + 'a' - 10;
     chars++;
-  } while ( ud /= divisor);
+  } while (ud /= divisor);
 
   *p = 0;
 
