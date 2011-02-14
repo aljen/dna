@@ -41,7 +41,7 @@ extern "C" {
 #define MAX_INTERRUPT_HANDLERS  256
 #define RESERVED_INTERRUPTS     32
 
-extern const char* exception_descriptions[32];
+extern const char* exception_descriptions[RESERVED_INTERRUPTS];
 
 void isr_handler(registers_t registers);
 
