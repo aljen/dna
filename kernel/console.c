@@ -29,6 +29,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <console.h>
+#include <serial.h>
 #include <utils.h>
 
 static const int COLUMNS = 80;
@@ -229,4 +230,5 @@ kprintf(const char* format, ...)
   va_end(args);
   for (int i = 0; i < length; i++)
     console_putchar(buffer[i]);
+  serial_printf(buffer, length);
 }
