@@ -35,15 +35,25 @@
 #include <isr.h>
 #include <timer.h>
 #include <console.h>
+#include <serial.h>
 #include <utils.h>
+
+extern "C" uint16_t start_bss, end_bss;
 
 extern "C" void
 kmain(uint32_t magic, multiboot_info_t* info)
 {
   (void)info;
 
+  memset(&start_bss, 0, &end_bss - &start_bss);
+
   console_init();
   console_clear();
+
+  serial_init();
+  serial_enable();
+
+  kprintf(KINFO "Loading DNA...\n");
 
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
     kprintf("Bad MBH magic number: 0x%x!\n", magic);
@@ -58,8 +68,6 @@ kmain(uint32_t magic, multiboot_info_t* info)
 
   // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
   timer_init(100); // initialize timer to 100Hz
-
-  kprintf(KINFO "Loading...\n");
 
   for (;;) {}
 
