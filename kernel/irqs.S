@@ -95,18 +95,15 @@ irq_common_stub:
   push  eax                             ; save the data segment descriptor
 
   mov   ax, 0x10                        ; load the kernel data segment
-                                        ; descriptor, 0x10 - 3rd entry in gdt
-                                        ; table
-  mov   ds, ax
-  mov   es, ax
+  mov   ds, ax                          ; descriptor, 0x10 - 3rd entry in gdt
+  mov   es, ax                          ; table
   mov   fs, ax
   mov   gs, ax
 
   call  irq_handler                     ; call irq handler
 
   pop   ebx                             ; reload the original data segment
-                                        ; descriptor
-  mov   ds, bx
+  mov   ds, bx                          ; descriptor
   mov   es, bx
   mov   fs, bx
   mov   gs, bx

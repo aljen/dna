@@ -59,7 +59,7 @@ irq_handler(registers_t registers)
     handler(registers);
   } else {
     kprintf(KLOG "recieved irq: %d (original irq: %d)\n", registers.int_no,
-        registers.int_no - 32);
+      registers.int_no - 32);
 //    unhandled_interrupt(registers);
   }
 }
@@ -67,9 +67,9 @@ irq_handler(registers_t registers)
 void
 register_interrupt_handler(uint8_t number, isr_t handler)
 {
+  kprintf(KLOG "Registering handler for an interrupt %d\n", number);
   if (sInterruptHandlers[number] != 0)
     kprintf(KWARN "Handler for an interrupt %d is already registered!\n", number);
-  kprintf(KLOG "Registering handler for an interrupt %d\n", number);
   sInterruptHandlers[number] = handler;
 }
 

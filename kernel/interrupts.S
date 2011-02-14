@@ -151,21 +151,18 @@ isr_common_stub:
   push  eax                             ; save the data segment descriptor
 
   mov   ax, 0x10                        ; load the kernel data segment
-                                        ; descriptor, 0x10 - 3rd entry in gdt
-                                        ; table
-  mov   ds, ax
-  mov   es, ax
+  mov   ds, ax                          ; descriptor, 0x10 - 3rd entry in gdt
+  mov   es, ax                          ; table
   mov   fs, ax
   mov   gs, ax
 
   call  isr_handler                     ; call isr handler
 
-  pop   eax                             ; reload the original data segment
-                                        ; descriptor
-  mov   ds, ax
-  mov   es, ax
-  mov   fs, ax
-  mov   gs, ax
+  pop   ebx                             ; reload the original data segment
+  mov   ds, bx                          ; descriptor
+  mov   es, bx
+  mov   fs, bx
+  mov   gs, bx
 
   popa                                  ; pops edi, esi, ebp, esp, eax, ebx
                                         ; ecx, edx
