@@ -34,6 +34,7 @@
 #include <irq.h>
 #include <isr.h>
 #include <timer.h>
+#include <keyboard.h>
 #include <console.h>
 #include <serial.h>
 #include <utils.h>
@@ -66,8 +67,8 @@ kmain(uint32_t magic, multiboot_info_t* info)
 
   enable_interrupts();
 
-  // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
-  timer_init(100); // initialize timer to 100Hz
+  timer_init(100); // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
+  keyboard_init();
 
   for (;;) {}
 
