@@ -32,7 +32,7 @@ SECTIONS {
     *(.COMMON)
     *(.bss)
     *(.gnu.linkonce.b.*)
-	end_bss = .;
+    end_bss = .;
   }
 
   /DISCARD/ : {
