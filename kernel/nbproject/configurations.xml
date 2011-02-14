@@ -17,6 +17,7 @@
         <itemPath>../include/kernel/isr.h</itemPath>
         <itemPath>../include/kernel/multiboot.h</itemPath>
         <itemPath>../include/kernel/pic.h</itemPath>
+        <itemPath>../include/kernel/serial.h</itemPath>
         <itemPath>../include/kernel/timer.h</itemPath>
         <itemPath>../include/kernel/utils.h</itemPath>
       </logicalFolder>
@@ -49,6 +50,7 @@
       <itemPath>isr.c</itemPath>
       <itemPath>kmain.cc</itemPath>
       <itemPath>pic.c</itemPath>
+      <itemPath>serial.c</itemPath>
       <itemPath>timer.c</itemPath>
       <itemPath>utils.c</itemPath>
     </logicalFolder>
@@ -79,7 +81,7 @@
             <pElem>../include/posix</pElem>
             <pElem>../include/utils</pElem>
           </incDir>
-          <commandLine>-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin</commandLine>
+          <commandLine>-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -std=c99</commandLine>
         </cTool>
         <ccTool>
           <incDir>
@@ -113,7 +115,7 @@
             <pElem>../include/posix</pElem>
             <pElem>../include/utils</pElem>
           </incDir>
-          <commandLine>-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin</commandLine>
+          <commandLine>-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -std=c99</commandLine>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>

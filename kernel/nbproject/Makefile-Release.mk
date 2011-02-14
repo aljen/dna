@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/serial.o \
 	${OBJECTDIR}/timer.o \
 	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/gdt.o \
@@ -49,7 +50,7 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+CFLAGS=-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -std=c99
 
 # CC Compiler Flags
 CCFLAGS=-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-exceptions -fno-rtti -fno-stack-protector
@@ -71,6 +72,11 @@ LDLIBSOPTIONS=
 dist/Release/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/CrossTools-Windows
 	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/serial.o: serial.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/serial.o serial.c
 
 ${OBJECTDIR}/timer.o: timer.c 
 	${MKDIR} -p ${OBJECTDIR}
