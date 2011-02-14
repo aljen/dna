@@ -28,9 +28,11 @@ SECTIONS {
   }
 
   .bss ALIGN(0x1000) : {
+    start_bss = .;
     *(.COMMON)
     *(.bss)
     *(.gnu.linkonce.b.*)
+	end_bss = .;
   }
 
   /DISCARD/ : {
