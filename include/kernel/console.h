@@ -32,6 +32,8 @@
 #define KERNEL_CONSOLE_H
 
 #include <stdint.h>
+#include <stdarg.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,11 +63,13 @@ static const uint8_t COLOR_WHITE           = 15;
 
 void console_init();
 void console_clear();
-int itoa(char* buf, int base, int d);
 void console_putchar(int c);
-void kprintf(const char* format, ...);
 void console_moveto(uint8_t x, uint8_t y);
 void console_getposition(uint8_t *x, uint8_t *y);
+
+int itoa(char* buf, int base, int d);
+int32_t vsnprintf(char *buffer, size_t size, const char *format, va_list args);
+void kprintf(const char* format, ...);
 
 #ifdef __cplusplus
 }

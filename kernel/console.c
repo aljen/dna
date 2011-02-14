@@ -53,6 +53,42 @@ console_clear()
   sPosX = sPosY = 0;
 }
 
+void
+console_putchar(int c)
+{
+  if (c == '\n' || c == '\r') {
+newline:
+      sPosX = 0;
+      sPosY++;
+      if (sPosY >= ROWS)
+        sPosY = 0;
+      return;
+  }
+
+  *(sVideo + (sPosX + sPosY * COLUMNS) * 2) = c & 0xff;
+  *(sVideo + (sPosX + sPosY * COLUMNS) * 2 + 1) = ATTRIBUTE;
+
+  sPosX++;
+  if (sPosX > COLUMNS)
+    goto newline;
+}
+
+void
+console_moveto(uint8_t x, uint8_t y)
+{
+  sPosX = x;
+  sPosY = y;
+}
+
+void
+console_getposition(uint8_t *x, uint8_t *y)
+{
+  if (x != NULL)
+    *x = sPosX;
+  if (y != NULL)
+    *y = sPosY;
+}
+
 int
 itoa(char* buf, int base, int d)
 {
@@ -90,30 +126,11 @@ itoa(char* buf, int base, int d)
   return chars;
 }
 
-void
-console_putchar(int c)
+int32_t
+vsnprintf(char *buffer, size_t size, const char *format, va_list args)
 {
-  if (c == '\n' || c == '\r') {
-newline:
-      sPosX = 0;
-      sPosY++;
-      if (sPosY >= ROWS)
-        sPosY = 0;
-      return;
-  }
-
-  *(sVideo + (sPosX + sPosY * COLUMNS) * 2) = c & 0xff;
-  *(sVideo + (sPosX + sPosY * COLUMNS) * 2 + 1) = ATTRIBUTE;
-
-  sPosX++;
-  if (sPosX > COLUMNS)
-    goto newline;
-}
-
-void
-kprintf(const char* format, ...)
-{
-  char **arg = (char**)&format;
+  unsigned int bytes_written = 0;
+  unsigned int buffer_position = 0;
   int c;
   int inside_format = 0;
   int fill_count = 0;
@@ -121,12 +138,11 @@ kprintf(const char* format, ...)
   int chars = 0;
   char buf[20];
 
-
-  arg++;
-
   while ((c = *format++) != 0) {
     if (c != '%' && inside_format == 0) {
-      console_putchar(c);
+      if (buffer_position < size)
+        buffer[buffer_position++] = c;
+      bytes_written++;
     } else {
       char *p;
 
@@ -141,14 +157,15 @@ kprintf(const char* format, ...)
         case 'x':
           if (c == 'x')
             is_hex = 1;
-          chars = itoa(buf, c, *((int *) arg++));
+          const int number = va_arg(args, int);
+          chars = itoa(buf, c, number);
           p = buf;
           inside_format = 0;
           goto string;
           break;
 
         case 's':
-          p = *arg++;
+          p = va_arg(args, char*);
           if (!p)
             p = (char*)"(null)";
           inside_format = 0;
@@ -165,40 +182,51 @@ kprintf(const char* format, ...)
 
       string:
           if (fill_count != 0) {
-              int i = 0;
               if (is_hex)
                 fill_count *= 2;
               const int count = fill_count - chars;
               if (count > 0) {
-                  for (i = 0; i < count; i++)
-                      console_putchar('0');
+                  for (int i = 0; i < count; i++) {
+                    if (buffer_position < size)
+                      buffer[buffer_position++] = '0';
+                    bytes_written++;
+                  }
               }
               fill_count = 0;
           }
-          while (*p)
-            console_putchar(*p++);
+          while (*p) {
+            if (buffer_position < size)
+              buffer[buffer_position++] = *p++;
+            bytes_written++;
+          }
           break;
 
         default:
-          console_putchar(*((int *) arg++));
+          if (buffer_position < size)
+            buffer[buffer_position++] = va_arg(args, int);
+          bytes_written++;
           break;
       }
     }
   }
+
+  if (buffer_position < size)
+    buffer[buffer_position] = '\0';
+  else
+    buffer[size] = '\0';
+
+  return bytes_written;
 }
 
 void
-console_moveto(uint8_t x, uint8_t y)
+kprintf(const char* format, ...)
 {
-  sPosX = x;
-  sPosY = y;
-}
-
-void
-console_getposition(uint8_t *x, uint8_t *y)
-{
-  if (x != NULL)
-    *x = sPosX;
-  if (y != NULL)
-    *y = sPosY;
+  int length = 0;
+  char buffer[1024];
+  va_list args;
+  va_start(args, format);
+  length = vsnprintf((char*)&buffer, 1024, format, args);
+  va_end(args);
+  for (int i = 0; i < length; i++)
+    console_putchar(buffer[i]);
 }
