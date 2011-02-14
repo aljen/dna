@@ -59,40 +59,6 @@ strlen(const char* str)
   return count;
 }
 
-uint8_t
-in8(uint16_t port)
-{
-  uint8_t ret;
-  __asm__ __volatile__("inb %1, %0" : "=a"(ret) : "dN"(port));
-  return ret;
-}
-
-void
-out8(uint16_t port, uint8_t data)
-{
-  __asm__ __volatile__("outb %1, %0" : : "dN"(port), "a"(data));
-}
-
-uint16_t
-in16(uint16_t port)
-{
-  uint16_t ret;
-  __asm__ __volatile__("inw %1, %0" : "=a"(ret) : "dN"(port));
-  return ret;
-}
-
-void
-out16(uint16_t port, uint16_t data)
-{
-  __asm__ __volatile__("outw %1, %0" : : "dN"(port), "a"(data));
-}
-
-void
-io_wait()
-{
-  __asm__ __volatile__("outb %%al, $0x80" : : "a"(0));
-}
-
 void  __attribute__((noreturn))
 panic(const char* format, ...)
 {

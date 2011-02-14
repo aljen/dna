@@ -43,11 +43,39 @@ void* memcpy(void* dest, const void* src, uint16_t count);
 void* memset(void* dest, unsigned char val, uint16_t count);
 uint16_t strlen(const char* str);
 
-uint8_t in8(uint16_t port);
-void out8(uint16_t port, uint8_t data);
-uint16_t in16(uint16_t port);
-void out16(uint16_t port, uint16_t data);
-void io_wait();
+static inline uint8_t
+in8(uint16_t port)
+{
+  uint8_t ret;
+  __asm__ __volatile__("inb %1, %0" : "=a"(ret) : "dN"(port));
+  return ret;
+}
+
+static inline void
+out8(uint16_t port, uint8_t data)
+{
+  __asm__ __volatile__("outb %1, %0" : : "dN"(port), "a"(data));
+}
+
+static inline uint16_t
+in16(uint16_t port)
+{
+  uint16_t ret;
+  __asm__ __volatile__("inw %1, %0" : "=a"(ret) : "dN"(port));
+  return ret;
+}
+
+static inline void
+out16(uint16_t port, uint16_t data)
+{
+  __asm__ __volatile__("outw %1, %0" : : "dN"(port), "a"(data));
+}
+
+static inline void
+io_wait()
+{
+  __asm__ __volatile__("outb %%al, $0x80" : : "a"(0));
+}
 
 void  __attribute__((noreturn)) panic(const char* format, ...);
 
