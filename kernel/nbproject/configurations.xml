@@ -15,6 +15,7 @@
         <itemPath>../include/kernel/idt.h</itemPath>
         <itemPath>../include/kernel/irq.h</itemPath>
         <itemPath>../include/kernel/isr.h</itemPath>
+        <itemPath>../include/kernel/keyboard.h</itemPath>
         <itemPath>../include/kernel/multiboot.h</itemPath>
         <itemPath>../include/kernel/pic.h</itemPath>
         <itemPath>../include/kernel/serial.h</itemPath>
@@ -48,6 +49,7 @@
       <itemPath>irq.c</itemPath>
       <itemPath>irqs.S</itemPath>
       <itemPath>isr.c</itemPath>
+      <itemPath>keyboard.c</itemPath>
       <itemPath>kmain.cc</itemPath>
       <itemPath>pic.c</itemPath>
       <itemPath>serial.c</itemPath>

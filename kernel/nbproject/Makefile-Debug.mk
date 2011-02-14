@@ -34,6 +34,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/serial.o \
+	${OBJECTDIR}/keyboard.o \
 	${OBJECTDIR}/timer.o \
 	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/gdt.o \
@@ -77,6 +78,11 @@ ${OBJECTDIR}/serial.o: serial.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/serial.o serial.c
+
+${OBJECTDIR}/keyboard.o: keyboard.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/keyboard.o keyboard.c
 
 ${OBJECTDIR}/timer.o: timer.c 
 	${MKDIR} -p ${OBJECTDIR}
