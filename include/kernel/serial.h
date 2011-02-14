@@ -53,7 +53,7 @@ void serial_init();
 void serial_enable();
 void serial_disable();
 bool serial_enabled();
-void serial_printf(const char *string, size_t count);
+void serial_puts(const char *string, size_t count);
 
 #ifdef __cplusplus
 }

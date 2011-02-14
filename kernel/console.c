@@ -230,5 +230,5 @@ kprintf(const char* format, ...)
   va_end(args);
   for (int i = 0; i < length; i++)
     console_putchar(buffer[i]);
-  serial_printf(buffer, length);
+  serial_puts(buffer, length);
 }

@@ -73,7 +73,7 @@ serial_putchar(char c)
 }
 
 void
-serial_printf(const char *string, size_t count)
+serial_puts(const char *string, size_t count)
 {
   if (!sSerialEnabled)
     return;
