@@ -61,7 +61,7 @@ irq_handler(registers_t registers)
   } else {
     kprintf(KLOG "recieved irq: %d (original irq: %d)\n", registers.int_no,
       registers.int_no - 32);
-//    unhandled_interrupt(registers);
+    unhandled_interrupt(registers);
   }
 }
 

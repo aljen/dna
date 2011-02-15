@@ -40,7 +40,7 @@ keyboard_callback(registers_t registers)
 
   unsigned char scancode = in8(0x60);
 
-  kprintf(KLOG "keyboard_callback 0x%2x\n", scancode);
+  kprintf(KLOG "keyboard_callback 0x%02x\n", scancode);
 
   if (scancode & 0x80) {  // key released
   } else { // key pressed

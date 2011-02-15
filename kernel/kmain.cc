@@ -58,7 +58,7 @@ kmain(uint32_t magic, multiboot_info_t* info)
   kprintf(KINFO "Loading DNA...\n");
 
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
-    kprintf(KWARN "Bad MBH magic number: 0x%4x!\n", magic);
+    kprintf(KWARN "Bad MBH magic number: 0x%08x!\n", magic);
     panic("Bad MBH magic number");
   }
 

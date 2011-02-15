@@ -86,19 +86,19 @@ isr_handler(registers_t registers)
 void
 unhandled_interrupt(registers_t registers)
 {
-  kprintf(KWARN "Unhandled interrupt 0x%1x ('%s')\n",
+  kprintf(KWARN "Unhandled interrupt 0x%02x ('%s')\n",
     registers.int_no, exception_descriptions[registers.int_no]);
   if (registers.int_no == 8 || (registers.int_no >= 10
       && registers.int_no <= 14)) {
-    kprintf(KWARN "Error code: 0x%4x\n", registers.err_code);
+    kprintf(KWARN "Error code: 0x%08x\n", registers.err_code);
   }
-  kprintf(KWARN "eax: 0x%4x esi: 0x%4x ebp: 0x%4x eflags: 0x%4x\n",
+  kprintf(KWARN "eax: 0x%08x esi: 0x%08x ebp: 0x%08x eflags: 0x%08x\n",
     registers.eax, registers.esi, registers.ebp, registers.eflags);
-  kprintf(KWARN "ebx: 0x%4x edi: 0x%4x  cs: 0x%4x usersp: 0x%4x\n",
+  kprintf(KWARN "ebx: 0x%08x edi: 0x%08x  cs: 0x%08x usersp: 0x%08x\n",
     registers.ebx, registers.edi, registers.cs, registers.usersp);
-  kprintf(KWARN "ecx: 0x%4x esp: 0x%4x  ds: 0x%4x\n",
+  kprintf(KWARN "ecx: 0x%08x esp: 0x%08x  ds: 0x%08x\n",
     registers.ecx, registers.esp, registers.ds);
-  kprintf(KWARN "edx: 0x%4x eip: 0x%4x  ss: 0x%4x\n",
+  kprintf(KWARN "edx: 0x%08x eip: 0x%08x  ss: 0x%08x\n",
     registers.edx, registers.eip, registers.ss);
 
   panic("Unhandled interrupt");
