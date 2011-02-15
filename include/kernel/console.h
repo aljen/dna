@@ -66,6 +66,7 @@ void console_clear();
 void console_putchar(int c);
 void console_moveto(uint8_t x, uint8_t y);
 void console_getposition(uint8_t *x, uint8_t *y);
+void console_scrollup();
 
 void kprintf(const char* format, ...);
 

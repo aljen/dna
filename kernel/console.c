@@ -50,7 +50,7 @@ console_init()
 void
 console_clear()
 {
-  memset((void*)sVideo, 0, COLUMNS * ROWS * 2);
+  memset((void*)sVideo, 0, COLUMNS * (ROWS - 1) * 2);
   sPosX = sPosY = 0;
 }
 
@@ -61,8 +61,10 @@ console_putchar(int c)
 newline:
       sPosX = 0;
       sPosY++;
-      if (sPosY >= ROWS)
-        sPosY = 0;
+      if (sPosY >= ROWS) {
+        sPosY = ROWS - 1;
+        console_scrollup();
+      }
       return;
   }
 
@@ -88,6 +90,18 @@ console_getposition(uint8_t *x, uint8_t *y)
     *x = sPosX;
   if (y != NULL)
     *y = sPosY;
+}
+
+void
+console_scrollup()
+{
+  for (int i = 1; i < ROWS - 1; i++) {
+    unsigned char *src = (unsigned char*)sVideo + ((i + 1) * COLUMNS * 2);
+    unsigned char *dst = (unsigned char*)sVideo + (i * COLUMNS * 2);
+    memcpy(dst, src, COLUMNS * 2);
+  }
+  unsigned char *line = (unsigned char*)sVideo + (((ROWS - 1) * COLUMNS) * 2);
+  memset((void*)line, 0, COLUMNS * 2);
 }
 
 void
