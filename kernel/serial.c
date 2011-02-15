@@ -29,6 +29,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <serial.h>
+#include <stdarg.h>
+#include <string.h>
 #include <utils.h>
 
 static bool sSerialEnabled = false;
@@ -90,4 +92,19 @@ serial_puts(const char *string, size_t count)
     }
     string++;
   }
+}
+
+void
+serial_printf(const char* format, ...)
+{
+  if (!sSerialEnabled)
+    return;
+
+  int length = 0;
+  char buffer[1024];
+  va_list args;
+  va_start(args, format);
+  length = vsnprintf((char*)&buffer, 1024, format, args);
+  va_end(args);
+  serial_puts(buffer, length);
 }
