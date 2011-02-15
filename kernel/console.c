@@ -50,7 +50,7 @@ console_init()
 void
 console_clear()
 {
-  memset((void*)sVideo, 0, COLUMNS * (ROWS - 1) * 2);
+  memset((void*)sVideo, 0, COLUMNS * ROWS * 2);
   sPosX = sPosY = 0;
 }
 
@@ -95,7 +95,7 @@ console_getposition(uint8_t *x, uint8_t *y)
 void
 console_scrollup()
 {
-  for (int i = 1; i < ROWS - 1; i++) {
+  for (int i = 0; i < ROWS - 1; i++) {
     unsigned char *src = (unsigned char*)sVideo + ((i + 1) * COLUMNS * 2);
     unsigned char *dst = (unsigned char*)sVideo + (i * COLUMNS * 2);
     memcpy(dst, src, COLUMNS * 2);
