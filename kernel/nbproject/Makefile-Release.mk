@@ -33,11 +33,11 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/string.o \
 	${OBJECTDIR}/serial.o \
 	${OBJECTDIR}/keyboard.o \
 	${OBJECTDIR}/timer.o \
-	${OBJECTDIR}/boot.o \
 	${OBJECTDIR}/gdt.o \
 	${OBJECTDIR}/pic.o \
 	${OBJECTDIR}/console.o \
@@ -75,6 +75,10 @@ dist/Release/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/CrossTools-Windows
 	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/boot.o: boot.S 
+	${MKDIR} -p ${OBJECTDIR}
+	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/boot.o boot.S
+
 ${OBJECTDIR}/string.o: string.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -94,10 +98,6 @@ ${OBJECTDIR}/timer.o: timer.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
-
-${OBJECTDIR}/boot.o: boot.S 
-	${MKDIR} -p ${OBJECTDIR}
-	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/boot.o boot.S
 
 ${OBJECTDIR}/gdt.o: gdt.c 
 	${MKDIR} -p ${OBJECTDIR}
