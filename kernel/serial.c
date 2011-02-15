@@ -55,12 +55,14 @@ serial_enable()
   sSerialEnabled = true;
 }
 
-void serial_disable()
+void
+serial_disable()
 {
   sSerialEnabled = false;
 }
 
-bool serial_enabled()
+bool
+serial_enabled()
 {
   return sSerialEnabled;
 }
