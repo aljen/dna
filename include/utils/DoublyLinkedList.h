@@ -31,7 +31,7 @@
 #ifndef UTILS_DOUBLYLINKEDLIST_H
 #define UTILS_DOUBLYLINKEDLIST_H
 
-#include <cstddef>
+#include <stdint.h>
 
 template<typename T = void*>
 class DoublyLinkedListLink {

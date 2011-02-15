@@ -31,7 +31,7 @@
 #ifndef UTILS_SINGLYLINKEDLIST_H
 #define UTILS_SINGLYLINKEDLIST_H
 
-#include <cstddef>
+#include <stdint.h>
 
 template<typename T = void*>
 class SinglyLinkedListLink {
