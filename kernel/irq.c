@@ -1,7 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "isr.h"
-
 // File: irq.c
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
@@ -32,6 +29,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <irq.h>
+#include <stdbool.h>
+#include <isr.h>
 #include <pic.h>
 #include <string.h>
 #include <utils.h>
@@ -48,6 +47,14 @@ irq_init()
 void
 irq_handler(registers_t registers)
 {
+  // check if it's a spurious interrupt
+  if (registers.int_no == IRQ7) {
+    out8(PIC1_COMMAND, 0x0b);
+    uint8_t irr = in8(PIC1_COMMAND);
+    if (!TEST_BIT(irr, 7))
+      return;
+  }
+
   // send EOI to PICs
   if (registers.int_no >= 40) // send to slave
     out8(PIC2_COMMAND, PIC_EOI);
