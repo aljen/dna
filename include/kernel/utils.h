@@ -39,10 +39,6 @@
 extern "C" {
 #endif
 
-void* memcpy(void* dest, const void* src, uint16_t count);
-void* memset(void* dest, unsigned char val, uint16_t count);
-uint16_t strlen(const char* str);
-
 static inline uint8_t
 in8(uint16_t port)
 {

@@ -19,6 +19,7 @@
         <itemPath>../include/kernel/multiboot.h</itemPath>
         <itemPath>../include/kernel/pic.h</itemPath>
         <itemPath>../include/kernel/serial.h</itemPath>
+        <itemPath>../include/kernel/string.h</itemPath>
         <itemPath>../include/kernel/timer.h</itemPath>
         <itemPath>../include/kernel/utils.h</itemPath>
       </logicalFolder>
@@ -53,6 +54,7 @@
       <itemPath>kmain.cc</itemPath>
       <itemPath>pic.c</itemPath>
       <itemPath>serial.c</itemPath>
+      <itemPath>string.c</itemPath>
       <itemPath>timer.c</itemPath>
       <itemPath>utils.c</itemPath>
     </logicalFolder>
@@ -98,7 +100,13 @@
           <commandLine>-f elf</commandLine>
         </asmTool>
         <linkerTool>
+          <linkerAddLib>
+            <pElem>../crosstools/lib/gcc/i586-elf/4.5.2</pElem>
+          </linkerAddLib>
           <commandlineTool>i586-elf-ld.exe</commandlineTool>
+          <linkerLibItems>
+            <linkerOptionItem>-lgcc</linkerOptionItem>
+          </linkerLibItems>
           <commandLine>-T ../ldscripts/kernel.ld</commandLine>
         </linkerTool>
       </compileType>

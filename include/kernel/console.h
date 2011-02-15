@@ -67,8 +67,6 @@ void console_putchar(int c);
 void console_moveto(uint8_t x, uint8_t y);
 void console_getposition(uint8_t *x, uint8_t *y);
 
-int itoa(char* buf, int base, int d);
-int32_t vsnprintf(char *buffer, size_t size, const char *format, va_list args);
 void kprintf(const char* format, ...);
 
 #ifdef __cplusplus

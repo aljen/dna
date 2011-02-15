@@ -31,7 +31,7 @@
 #include <idt.h>
 #include <pic.h>
 #include <irq.h>
-#include <utils.h>
+#include <string.h>
 
 static idt_entry_t sIdtEntries[MAX_IDT_GATES];
 static idt_ptr_t sIdt;

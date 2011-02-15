@@ -31,34 +31,6 @@
 #include <utils.h>
 #include <console.h>
 
-void*
-memcpy(void* dest, const void* src, uint16_t count)
-{
-  const char *source = (const char*)src;
-  char *destination = (char*)dest;
-  for (; count > 0; count--) *destination++ = *source++;
-
-  return dest;
-}
-
-void*
-memset(void* dest, unsigned char val, uint16_t count)
-{
-  char *destination = (char*)dest;
-  for (; count > 0; count--) *destination++ = val;
-
-  return dest;
-}
-
-uint16_t
-strlen(const char* str)
-{
-  uint16_t count;
-  for (count = 0; *str != '\0'; str++) count++;
-
-  return count;
-}
-
 void  __attribute__((noreturn))
 panic(const char* format, ...)
 {

@@ -33,6 +33,7 @@
 
 #include <irq.h>
 #include <pic.h>
+#include <string.h>
 #include <utils.h>
 #include <console.h>
 

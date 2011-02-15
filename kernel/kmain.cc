@@ -37,6 +37,7 @@
 #include <keyboard.h>
 #include <console.h>
 #include <serial.h>
+#include <string.h>
 #include <utils.h>
 
 extern "C" uint16_t start_bss, end_bss;
@@ -57,8 +58,8 @@ kmain(uint32_t magic, multiboot_info_t* info)
   kprintf(KINFO "Loading DNA...\n");
 
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
-    kprintf("Bad MBH magic number: 0x%x!\n", magic);
-    return;
+    kprintf(KWARN "Bad MBH magic number: 0x%4x!\n", magic);
+    panic("Bad MBH magic number");
   }
 
   gdt_init();

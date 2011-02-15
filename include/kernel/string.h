@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: console.c
+// File: string.h
 // Copyright (c) 2011, Artur Wyszyński <harakash@gmail.com>
 // All rights reserved.
 //
@@ -28,78 +28,25 @@
 // IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <console.h>
-#include <serial.h>
-#include <string.h>
+#ifndef KERNEL_STRING_H
+#define KERNEL_STRING_H
 
-static const int COLUMNS = 80;
-static const int ROWS = 25;
-static const int ATTRIBUTE = 7;
-static const int VIDEO = 0xb8000;
-static int sPosX = 0;
-static int sPosY = 0;
-static volatile unsigned char* sVideo;
+#include <stdint.h>
+#include <stddef.h>
+#include <stdarg.h>
 
-void
-console_init()
-{
-  sVideo = (unsigned char*)VIDEO;
-  sPosX = sPosY = 0;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void* memcpy(void* dest, const void* src, size_t count);
+void* memset(void* dest, unsigned char val, size_t count);
+size_t strlen(const char* str);
+
+size_t vsnprintf(char *buffer, size_t size, const char *format, va_list args);
+
+#ifdef __cplusplus
 }
+#endif
 
-void
-console_clear()
-{
-  memset((void*)sVideo, 0, COLUMNS * ROWS * 2);
-  sPosX = sPosY = 0;
-}
-
-void
-console_putchar(int c)
-{
-  if (c == '\n' || c == '\r') {
-newline:
-      sPosX = 0;
-      sPosY++;
-      if (sPosY >= ROWS)
-        sPosY = 0;
-      return;
-  }
-
-  *(sVideo + (sPosX + sPosY * COLUMNS) * 2) = c & 0xff;
-  *(sVideo + (sPosX + sPosY * COLUMNS) * 2 + 1) = ATTRIBUTE;
-
-  sPosX++;
-  if (sPosX > COLUMNS)
-    goto newline;
-}
-
-void
-console_moveto(uint8_t x, uint8_t y)
-{
-  sPosX = x;
-  sPosY = y;
-}
-
-void
-console_getposition(uint8_t *x, uint8_t *y)
-{
-  if (x != NULL)
-    *x = sPosX;
-  if (y != NULL)
-    *y = sPosY;
-}
-
-void
-kprintf(const char* format, ...)
-{
-  int length = 0;
-  char buffer[1024];
-  va_list args;
-  va_start(args, format);
-  length = vsnprintf((char*)&buffer, 1024, format, args);
-  va_end(args);
-  for (int i = 0; i < length; i++)
-    console_putchar(buffer[i]);
-  serial_puts(buffer, length);
-}
+#endif // KERNEL_STRING_H

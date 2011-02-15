@@ -29,7 +29,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <gdt.h>
-#include <utils.h>
+#include <string.h>
 
 static gdt_entry_t sGdtEntries[NUM_SEGMENTS];
 static gdt_ptr_t sGdt;

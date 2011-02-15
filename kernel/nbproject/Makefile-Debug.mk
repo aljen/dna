@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/string.o \
 	${OBJECTDIR}/serial.o \
 	${OBJECTDIR}/keyboard.o \
 	${OBJECTDIR}/timer.o \
@@ -64,7 +65,7 @@ FFLAGS=
 ASFLAGS=-f elf
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L../crosstools/lib/gcc/i586-elf/4.5.2 -lgcc
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -73,6 +74,11 @@ LDLIBSOPTIONS=
 dist/Debug/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/CrossTools-Windows
 	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/string.o: string.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/string.o string.c
 
 ${OBJECTDIR}/serial.o: serial.c 
 	${MKDIR} -p ${OBJECTDIR}
