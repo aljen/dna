@@ -66,10 +66,10 @@ kmain(uint32_t magic, multiboot_info_t* info)
   idt_init();
   irq_init();
 
-  enable_interrupts();
-
   timer_init(100); // 1193180Hz / 100Hz = 11931 ~= tick each 11ms
   keyboard_init();
+
+  enable_interrupts();
 
   for (;;) {}
 
