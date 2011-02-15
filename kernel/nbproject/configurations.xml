@@ -107,7 +107,7 @@
           <linkerLibItems>
             <linkerOptionItem>-lgcc</linkerOptionItem>
           </linkerLibItems>
-          <commandLine>-T ../ldscripts/kernel.ld</commandLine>
+          <commandLine>-T ../ldscripts/kernel.ld -Map ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel.map</commandLine>
         </linkerTool>
       </compileType>
     </conf>
@@ -144,8 +144,14 @@
           <commandLine>-f elf</commandLine>
         </asmTool>
         <linkerTool>
+          <linkerAddLib>
+            <pElem>../crosstools/lib/gcc/i586-elf/4.5.2</pElem>
+          </linkerAddLib>
           <commandlineTool>i586-elf-ld.exe</commandlineTool>
-          <commandLine>-T ../ldscripts/kernel.ld</commandLine>
+          <linkerLibItems>
+            <linkerOptionItem>-lgcc</linkerOptionItem>
+          </linkerLibItems>
+          <commandLine>-T ../ldscripts/kernel.ld -Map ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel.map</commandLine>
         </linkerTool>
       </compileType>
     </conf>

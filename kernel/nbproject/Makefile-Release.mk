@@ -34,21 +34,21 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/boot.o \
-	${OBJECTDIR}/string.o \
-	${OBJECTDIR}/serial.o \
-	${OBJECTDIR}/keyboard.o \
-	${OBJECTDIR}/timer.o \
-	${OBJECTDIR}/gdt.o \
-	${OBJECTDIR}/pic.o \
 	${OBJECTDIR}/console.o \
+	${OBJECTDIR}/cpp_support.o \
+	${OBJECTDIR}/gdt.o \
 	${OBJECTDIR}/idt.o \
-	${OBJECTDIR}/isr.o \
-	${OBJECTDIR}/utils.o \
-	${OBJECTDIR}/irqs.o \
-	${OBJECTDIR}/kmain.o \
-	${OBJECTDIR}/irq.o \
 	${OBJECTDIR}/interrupts.o \
-	${OBJECTDIR}/cpp_support.o
+	${OBJECTDIR}/irq.o \
+	${OBJECTDIR}/irqs.o \
+	${OBJECTDIR}/isr.o \
+	${OBJECTDIR}/keyboard.o \
+	${OBJECTDIR}/kmain.o \
+	${OBJECTDIR}/pic.o \
+	${OBJECTDIR}/serial.o \
+	${OBJECTDIR}/string.o \
+	${OBJECTDIR}/timer.o \
+	${OBJECTDIR}/utils.o
 
 
 # C Compiler Flags
@@ -65,7 +65,7 @@ FFLAGS=
 ASFLAGS=-f elf
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L../crosstools/lib/gcc/i586-elf/4.5.2 -lgcc
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -73,11 +73,7 @@ LDLIBSOPTIONS=
 
 dist/Release/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/CrossTools-Windows
-	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
-
-${OBJECTDIR}/boot.o: boot.S 
-	${MKDIR} -p ${OBJECTDIR}
-	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/boot.o boot.S
+	i586-elf-ld.exe -T ../ldscripts/kernel.ld -Map ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel.map -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/string.o: string.c 
 	${MKDIR} -p ${OBJECTDIR}
@@ -98,6 +94,10 @@ ${OBJECTDIR}/timer.o: timer.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
+
+${OBJECTDIR}/boot.o: boot.S 
+	${MKDIR} -p ${OBJECTDIR}
+	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/boot.o boot.S
 
 ${OBJECTDIR}/gdt.o: gdt.c 
 	${MKDIR} -p ${OBJECTDIR}

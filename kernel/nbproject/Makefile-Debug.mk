@@ -34,21 +34,21 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/boot.o \
-	${OBJECTDIR}/string.o \
-	${OBJECTDIR}/serial.o \
-	${OBJECTDIR}/keyboard.o \
-	${OBJECTDIR}/timer.o \
-	${OBJECTDIR}/gdt.o \
-	${OBJECTDIR}/pic.o \
 	${OBJECTDIR}/console.o \
+	${OBJECTDIR}/cpp_support.o \
+	${OBJECTDIR}/gdt.o \
 	${OBJECTDIR}/idt.o \
-	${OBJECTDIR}/isr.o \
-	${OBJECTDIR}/utils.o \
-	${OBJECTDIR}/irqs.o \
-	${OBJECTDIR}/kmain.o \
-	${OBJECTDIR}/irq.o \
 	${OBJECTDIR}/interrupts.o \
-	${OBJECTDIR}/cpp_support.o
+	${OBJECTDIR}/irq.o \
+	${OBJECTDIR}/irqs.o \
+	${OBJECTDIR}/isr.o \
+	${OBJECTDIR}/keyboard.o \
+	${OBJECTDIR}/kmain.o \
+	${OBJECTDIR}/pic.o \
+	${OBJECTDIR}/serial.o \
+	${OBJECTDIR}/string.o \
+	${OBJECTDIR}/timer.o \
+	${OBJECTDIR}/utils.o
 
 
 # C Compiler Flags
@@ -73,84 +73,84 @@ LDLIBSOPTIONS=-L../crosstools/lib/gcc/i586-elf/4.5.2 -lgcc
 
 dist/Debug/CrossTools-Windows/kernel.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/CrossTools-Windows
-	i586-elf-ld.exe -T ../ldscripts/kernel.ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	i586-elf-ld.exe -T ../ldscripts/kernel.ld -Map ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel.map -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kernel ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/boot.o: boot.S 
 	${MKDIR} -p ${OBJECTDIR}
 	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/boot.o boot.S
-
-${OBJECTDIR}/string.o: string.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/string.o string.c
-
-${OBJECTDIR}/serial.o: serial.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/serial.o serial.c
-
-${OBJECTDIR}/keyboard.o: keyboard.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/keyboard.o keyboard.c
-
-${OBJECTDIR}/timer.o: timer.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
-
-${OBJECTDIR}/gdt.o: gdt.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/gdt.o gdt.c
-
-${OBJECTDIR}/pic.o: pic.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/pic.o pic.c
 
 ${OBJECTDIR}/console.o: console.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/console.o console.c
 
+${OBJECTDIR}/cpp_support.o: cpp_support.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/cpp_support.o cpp_support.c
+
+${OBJECTDIR}/gdt.o: gdt.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/gdt.o gdt.c
+
 ${OBJECTDIR}/idt.o: idt.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/idt.o idt.c
 
-${OBJECTDIR}/isr.o: isr.c 
+${OBJECTDIR}/interrupts.o: interrupts.S 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/isr.o isr.c
-
-${OBJECTDIR}/utils.o: utils.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.c
-
-${OBJECTDIR}/irqs.o: irqs.S 
-	${MKDIR} -p ${OBJECTDIR}
-	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/irqs.o irqs.S
-
-${OBJECTDIR}/kmain.o: kmain.cc 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmain.o kmain.cc
+	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/interrupts.o interrupts.S
 
 ${OBJECTDIR}/irq.o: irq.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/irq.o irq.c
 
-${OBJECTDIR}/interrupts.o: interrupts.S 
+${OBJECTDIR}/irqs.o: irqs.S 
 	${MKDIR} -p ${OBJECTDIR}
-	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/interrupts.o interrupts.S
+	$(AS) $(ASFLAGS) -o ${OBJECTDIR}/irqs.o irqs.S
 
-${OBJECTDIR}/cpp_support.o: cpp_support.c 
+${OBJECTDIR}/isr.o: isr.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/cpp_support.o cpp_support.c
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/isr.o isr.c
+
+${OBJECTDIR}/keyboard.o: keyboard.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/keyboard.o keyboard.c
+
+${OBJECTDIR}/kmain.o: kmain.cc 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmain.o kmain.cc
+
+${OBJECTDIR}/pic.o: pic.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/pic.o pic.c
+
+${OBJECTDIR}/serial.o: serial.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/serial.o serial.c
+
+${OBJECTDIR}/string.o: string.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/string.o string.c
+
+${OBJECTDIR}/timer.o: timer.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/timer.o timer.c
+
+${OBJECTDIR}/utils.o: utils.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -I../include/kernel -I../include/posix -I../include/utils -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.c
 
 # Subprojects
 .build-subprojects:
