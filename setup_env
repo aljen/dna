@@ -1,2 +1,0 @@
-# Usage: user@host ./dna $ . setup_env
-export PATH=$PATH:`pwd`/crosstools/bin
