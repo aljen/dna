@@ -1,15 +1,15 @@
 @echo off
-set DISKNAME=disk
+set DISKNAME=%CD%\disk.vhd
 set DISKLETTER=z
 if not "%1"=="" set DISKNAME=%1
 if not "%2"=="" set DISKLETTER=%2
-if not exist %CD%\%DISKNAME%.vhd goto NOTFOUND
-echo Mounting %CD%\%DISKNAME%.vhd as %DISKLETTER%:
-echo select vdisk file="%CD%\%DISKNAME%.vhd" > script.vhd
+if not exist %DISKNAME% goto NOTFOUND
+echo Mounting %DISKNAME% as %DISKLETTER%:
+echo select vdisk file="%DISKNAME%" > script.vhd
 echo attach vdisk >> script.vhd
 diskpart /s script.vhd > nul
 del script.vhd
 goto END
 :NOTFOUND
-echo Disk %CD%\%DISKNAME%.vhd not found!
+echo Disk %DISKNAME% not found!
 :END
