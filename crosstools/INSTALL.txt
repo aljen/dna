@@ -63,6 +63,7 @@ $ make -jN all-gcc
 $ make install-gcc
 $ make -jN all-target-libgcc
 $ make install-target-libgcc
+$ cp /mingw/bin/libiconv-2.dll $PREFIX/libexec/gcc/x86_64-pc-dna/4.6.1/
 $ mv /path/where/you/downloaded/files/yasm-VERSION.exe $PREFIX/bin/yasm.exe
 
 done!
