@@ -1,6 +1,7 @@
-
 floppy.img
 kernel_log.txt
 system.log
 build*/
 dist*/
+*.pyc
+.lock-wafbuild

@@ -10,10 +10,14 @@ top = '.'
 out = 'build'
 
 def options(opt):
-  pass
+  from waflib.Tools.compiler_c import c_compiler
+  from waflib.Tools.compiler_cxx import cxx_compiler
+  c_compiler['win32'] = ['dna_gcc']
+  cxx_compiler['win32'] = ['dna_gxx']
+  opt.load('compiler_c compiler_cxx')
 
-def configure(ctx):
-  pass
+def configure(conf):
+  conf.load('compiler_c compiler_cxx')
 
-def build(ctx):
+def build(bld):
   pass
