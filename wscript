@@ -9,15 +9,14 @@ REVISION = ''
 top = '.'
 out = 'build'
 
+from waflib.extras import dna
+
 def options(opt):
-  from waflib.Tools.compiler_c import c_compiler
-  from waflib.Tools.compiler_cxx import cxx_compiler
-  c_compiler['win32'] = ['dna_gcc']
-  cxx_compiler['win32'] = ['dna_gxx']
-  opt.load('compiler_c compiler_cxx')
+  opt.load('compiler_c compiler_cxx dna')
 
 def configure(conf):
-  conf.load('compiler_c compiler_cxx')
+  conf.load('compiler_c compiler_cxx dna')
 
 def build(bld):
-  pass
+  bld.add_pre_fun(dna.vhd_mount)
+  bld.add_post_fun(dna.vhd_umount)
