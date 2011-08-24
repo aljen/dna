@@ -4,4 +4,6 @@ system.log
 build*/
 dist*/
 *.pyc
-.lock-wafbuild
+*.vhd
+.lock-*
+
