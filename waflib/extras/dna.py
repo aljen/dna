@@ -3,7 +3,9 @@
 # Artur Wyszyñski, 2011
 
 import os, sys
+from waflib import Task, Utils
 from waflib.Configure import conf
+from waflib.Tools.ccroot import link_task
 
 @conf
 def find_crosstools_root(conf):
@@ -13,31 +15,33 @@ def find_crosstools_root(conf):
 
 @conf
 def vhd_create(conf):
-  image = conf.path.make_node(conf.env.TARGET_DISK_IMAGE).abspath()
+  if os.path.isfile(conf.env.TARGET_DISK_PATH):
+    return
   print('If a window pops up when creating VHD and is asking you to format a partition, cancel it!')
   conf.start_msg('Creating VHD disk')
-  conf.end_msg('%s (%s MB)' % (image, conf.env.TARGET_DISK_SIZE))
-  cmd = ('%s %s %s %s' % (conf.env.VHD_CREATE, image, conf.env.TARGET_DISK_SIZE, conf.env.TARGET_DISK_MOUNT))
+  conf.end_msg('%s MB, ext2' % conf.env.TARGET_DISK_SIZE)
+  cmd = ('%s %s %s %s' % (conf.env.VHD_CREATE, conf.env.TARGET_DISK_PATH, conf.env.TARGET_DISK_SIZE, conf.env.TARGET_DISK_MOUNT))
   conf.exec_command(cmd)
 
 def vhd_mount(bld):
-  image = bld.path.make_node(bld.env.TARGET_DISK_IMAGE).abspath()
-  if not os.path.isfile(image):
-    bld.fatal('Can\'t find VHD disk %s!' % image)
-  cmd = ('%s %s %s' % (bld.env.VHD_MOUNT, image, bld.env.TARGET_DISK_MOUNT))
+  if not os.path.isfile(bld.env.TARGET_DISK_PATH):
+    bld.fatal('Can\'t find VHD disk %s!' % bld.env.TARGET_DISK_PATH)
+  cmd = ('%s %s %s' % (bld.env.VHD_MOUNT, bld.env.TARGET_DISK_PATH, bld.env.TARGET_DISK_MOUNT))
   bld.exec_command(cmd)
 
 def vhd_umount(bld):
-  image = bld.path.make_node(bld.env.TARGET_DISK_IMAGE).abspath()
-  if not os.path.isfile(image):
-    bld.fatal('Can\'t find VHD disk %s!' % image)
-  cmd = ('%s %s' % (bld.env.VHD_UMOUNT, image))
+  if not os.path.isfile(bld.env.TARGET_DISK_PATH):
+    bld.fatal('Can\'t find VHD disk %s!' % bld.env.TARGET_DISK_PATH)
+  cmd = ('%s %s' % (bld.env.VHD_UMOUNT, bld.env.TARGET_DISK_PATH))
   bld.exec_command(cmd)
 
 def options(opt):
+  opt.load('compiler_c compiler_cxx nasm  msvs')
   pass
 
 def configure(conf):
+  conf.load('compiler_c compiler_cxx nasm')
+
   conf.env.CROSSTOOLS_ROOT = conf.find_crosstools_root()
   bin = os.path.join(conf.env.CROSSTOOLS_ROOT, 'bin')
   scripts = os.path.join(conf.path.abspath(), 'scripts')
@@ -73,5 +77,20 @@ def configure(conf):
   conf.env.TARGET_DISK_IMAGE = 'disk.vhd'
   conf.env.TARGET_DISK_SIZE = 256
   conf.env.TARGET_DISK_MOUNT = 'Z'
+  
+  conf.start_msg('Setting target VHD image path to')
+  conf.env.TARGET_DISK_PATH = conf.path.make_node(conf.env.TARGET_DISK_IMAGE).abspath()
+  conf.end_msg(conf.env.TARGET_DISK_PATH)
 
   conf.vhd_create()
+
+  conf.start_msg('Setting prefix to')
+  conf.env.PREFIX = '%s:\\' % conf.env.TARGET_DISK_MOUNT
+  conf.options.prefix = conf.env.PREFIX
+  conf.end_msg(conf.env.PREFIX)
+
+class bootloader(link_task):
+  run_str = 'cp ${SRC} ${TGT}'
+  ext_out = ['.bin']
+  inst_to = '${BINDIR}'
+  chmod   = Utils.O755
