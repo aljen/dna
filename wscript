@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+﻿#! /usr/bin/env python
 # encoding: utf-8
-# Artur Wyszy�ski, 2011
+# Artur Wyszyński, 2011
 
 VERSION = '0.0.1'
 APPNAME = 'dna-os'
