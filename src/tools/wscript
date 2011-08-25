@@ -3,4 +3,4 @@
 # Artur Wyszyñski, 2011
 
 def build(bld):
-  pass
+  bld(features = 'c cprogram', source = 'writebootloader.c', target = 'writebootloader')
