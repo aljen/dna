@@ -20,6 +20,10 @@ def configure(conf):
 def build(bld):
   if bld.cmd == 'run':
     dna.run_bochs(bld)
+  elif bld.cmd == 'mount':
+    dna.vhd_mount(bld)
+  elif bld.cmd == 'umount':
+    dna.vhd_umount(bld)
   else:
     bld.add_pre_fun(dna.vhd_mount)
     bld.add_post_fun(dna.vhd_umount)

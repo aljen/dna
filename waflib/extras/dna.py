@@ -248,3 +248,9 @@ class bootloader(link_task):
 
 class run(BuildContext):
   cmd = 'run'
+
+class mount(BuildContext):
+  cmd = 'mount'
+
+class umount(BuildContext):
+  cmd = 'umount'
