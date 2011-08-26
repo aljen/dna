@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+﻿#! /usr/bin/env python
 # encoding: utf-8
-# Artur Wyszy�ski, 2011
+# Artur Wyszyński, 2011
 
 import os, sys, struct, array, uuid, time
 from waflib import Task, Utils
@@ -147,7 +147,7 @@ def generate_bochsrc(conf):
   sector_size = 512
   sectors_per_track = 63
   heads = 16
-  image_size = os.path.getsize(conf.env.TARGET_DISK_PATH) - vhd_footer_size
+  image_size = os.path.getsize(conf.env.TARGET_DISK_PATH)
   cylinders = image_size / sector_size / sectors_per_track / heads
 
   serial_log = conf.path.get_bld().make_node('serial.log').abspath()
@@ -163,7 +163,7 @@ def generate_bochsrc(conf):
   return bochsrc.abspath()
 
 def run_bochs(bld):
-  cmd = '"%s" -f "%s"' % (bld.env.BOCHS, bld.env.BOCHSRC)
+  cmd = '"%s" -q -f "%s"' % (bld.env.BOCHS, bld.env.BOCHSRC)
   bld.exec_command(cmd)
 
 def vhd_mount(bld):
@@ -191,8 +191,9 @@ def configure(conf):
   
   if not 'BOCHS_ROOT' in conf.environ:
     conf.fatal('Set BOCHS_ROOT to your Bochs installation directory!')
-  
-  bochs = conf.find_program('bochs', var = 'BOCHS', path_list = conf.env.BOCHS_ROOT)
+  conf.env.BOCHS_ROOT = conf.environ['BOCHS_ROOT']
+
+  bochs = conf.find_program('bochs', var = 'BOCHS', path_list = [conf.env.BOCHS_ROOT])
 
   cc = conf.find_program('x86_64-pc-dna-gcc', var = 'TARGET_CC', path_list = bin)
   cc = conf.cmd_to_list(cc)
