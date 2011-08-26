@@ -1,5 +1,7 @@
 plugin_ctrl: unmapped=1, biosdev=1, speaker=1, extfpuirq=1, gameport=1, pci_ide=1, acpi=1, ioapic=1
 memory: host=32, guest=32
+boot: disk
+floppy_bootsig_check: disabled=1
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
 ata0-master: type=disk, mode=flat, translation=auto, path="{0}", cylinders={1}, heads={2}, spt={3}, biosdetect=auto, model="Generic 1234"
 ata1: enabled=0
@@ -17,7 +19,8 @@ i440fxsupport: enabled=1
 vga_update_interval: 50000
 vga: extension=vbe
 cpu: count=1, ips=500000, reset_on_triple_fault=1, ignore_bad_msrs=1
-cpuid: cpuid_limit_winnt=0, mmx=1, sse=sse2, xapic=1, sep=1, aes=0, xsave=0, movbe=0, 1g_pages=0
+cpuid: cpuid_limit_winnt=0, mmx=1, sse=sse2, xapic=1, sep=1, aes=0, xsave=0, movbe=0, 1g_pages=0, pcid=0 fsgsbase=0
+cpuid: stepping=3, vendor_string="GenuineIntel", brand_string="              Intel(R) Pentium(R) 4 CPU        "
 print_timestamps: enabled=0
 port_e9_hack: enabled=0
 text_snapshot_check: enabled=0
@@ -38,4 +41,4 @@ keyboard_serial_delay: 250
 keyboard_paste_delay: 100000
 keyboard_mapping: enabled=0, map=
 user_shortcut: keys=none
-mouse: enabled=0, type=ps2
+mouse: enabled=0, type=ps2, toggle=ctrl+mbutton
