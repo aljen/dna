@@ -137,6 +137,9 @@ def vhd_create(conf):
   image.write(vhd_footer)
   image.close()
 
+  cmd = ('%s %s %s' % (conf.env.VHD_CREATE, conf.env.TARGET_DISK_PATH, conf.env.TARGET_DISK_MOUNT))
+  conf.exec_command(cmd)
+
   conf.end_msg('%s MB, ext2' % conf.env.TARGET_DISK_SIZE)
 
 @conf

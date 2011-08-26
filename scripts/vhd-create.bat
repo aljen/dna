@@ -1,14 +1,9 @@
 @echo off
 set DISKNAME=%CD%\disk.vhd
-set DISKSIZE=128
 set DISKLETTER=z
 if not "%1"=="" set DISKNAME=%1
-if not "%2"=="" set DISKSIZE=%2
-if not "%3"=="" set DISKLETTER=%3
-if exist %DISKNAME% goto END
-echo Creating %DISKNAME% with size %DISKSIZE% MB (ext2)
-echo create vdisk file="%DISKNAME%" maximum=%DISKSIZE% type=fixed noerr > script.vhd
-echo select vdisk file="%DISKNAME%" >> script.vhd
+if not "%2"=="" set DISKLETTER=%2
+echo select vdisk file="%DISKNAME%" > script.vhd
 echo attach vdisk noerr>> script.vhd
 echo clean >> script.vhd
 echo create partition primary noerr>> script.vhd
