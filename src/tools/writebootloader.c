@@ -39,6 +39,9 @@
 #  define PACKED(x) x __attribute__((packed))
 #endif
 
+#define GET_SECTOR(sector)              (sector & 0x3f)
+#define GET_CYLINDER(sector, cylinder)  (((sector ^ 0x3f) << 2) | cylinder)
+
 PACKED(
 typedef struct mbr_entry_t {
     uint8_t status;
@@ -63,72 +66,122 @@ typedef struct mbr_t {
 )
 
 #define MBR_SIZE    512
-#define LOADER_SIZE 446
+#define SECTOR_SIZE 512
+#define STAGE1_SIZE 446   // MBR's code block size
+#define STAGE2_SIZE 1024  // ext2 has free 2 sectors for VBR before superblock
+
+int32_t load_stage(const char *filename, void *buffer, size_t max_size)
+{
+  int32_t ret = -1;
+  size_t size = 0;
+  FILE *file = fopen(filename, "rb");
+
+  fprintf(stderr, "Loading %s\n", filename);
+
+  if (!file) {
+    fprintf(stderr, "Can't open %s!\n", filename);
+    return ret;
+  }
+
+  fseek(file, 0, SEEK_END);
+  size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  if (size != max_size) {
+    fclose(file);
+    fprintf(stderr, "%s has wrong size, should be %d!\n", filename, max_size);
+    return ret;
+  }
+
+  ret = fread(buffer, 1, max_size, file);
+  fclose(file);
+  
+  return ret;
+}
+
+int32_t write_stage(FILE *file, int32_t offset, const void *src, size_t max_size)
+{
+  fseek(file, offset, SEEK_SET);
+  return fwrite(src, max_size, 1, file);
+}
 
 int main(int argc, const char **argv)
 {
   mbr_t mbr;
-  FILE *image = NULL, *loader = NULL;
-  uint8_t loaderBuffer[LOADER_SIZE];
   size_t count = 0;
+  FILE *image = NULL;
+  uint8_t stage1Buffer[STAGE1_SIZE];
+  uint8_t stage2Buffer[STAGE2_SIZE];
+  int8_t activePartition = -1;
+  uint32_t offset = 0;
+  uint32_t sector = 0;
+  uint8_t type = 0;
+  int8_t i = 0;
 
-  if (argc < 3) {
+  if (argc < 4) {
     fprintf(stderr, "Usage:\n");
-    fprintf(stderr, "%s <disk.vhd> <loader.bin>\n", argv[0]);
+    fprintf(stderr, "%s <disk.vhd> <stage1.bin> <stage2.bin>\n", argv[0]);
     return EXIT_FAILURE;
   }
 
   memset(&mbr, 0, MBR_SIZE);
-  memset(&loaderBuffer, 0, LOADER_SIZE);
+  memset(&stage1Buffer, 0, STAGE1_SIZE);
+  memset(&stage2Buffer, 0, STAGE2_SIZE);
 
+  if (load_stage(argv[2], &stage1Buffer, STAGE1_SIZE) < 0)
+    return EXIT_FAILURE;
+  
+  if (load_stage(argv[3], &stage2Buffer, STAGE2_SIZE) < 0)
+    return EXIT_FAILURE;
+
+  fprintf(stderr, "Opening %s\n", argv[1]);
   image = fopen(argv[1], "r+b");
   if (!image) {
     fprintf(stderr, "Can't open %s!\n", argv[1]);
     return EXIT_FAILURE;
   }
 
-  loader = fopen(argv[2], "rb");
-  if (!loader) {
-    fclose(image);
-    fprintf(stderr, "Can't open %s!\n", argv[2]);
-    return EXIT_FAILURE;
-  }
-
   count = fread(&mbr, 1, MBR_SIZE, image);
   if (count != MBR_SIZE) {
     fclose(image);
-    fclose(loader);
-    fprintf(stderr, "Wrong MBR size (%d), should be %d!\n", count, MBR_SIZE);
+    fprintf(stderr, "Can't read MBR from %s!\n", argv[1]);
     return EXIT_FAILURE;
   }
 
   if (mbr.signature[1] != 0xaa && mbr.signature[0] != 0x55) {
     fclose(image);
-    fclose(loader);
-    fprintf(stderr, "Wrong MBR signature (0x%2x%2x), should be 0x%2x%2x!\n",
-      count, mbr.signature[1], mbr.signature[0], 0xaa, 0x55);
+    fprintf(stderr, "Wrong MBR boot signature, should be 0x%2x%2x!\n", 0xaa,
+      0x55);
     return EXIT_FAILURE;
   }
+
+  for (i = 0; i < 4; i++) {
+    if (mbr.partitions[i].status == 0x80) {
+      activePartition = i;
+      break;
+    }
+  }
+
+  if (activePartition == -1) {
+    fclose(image);
+    fprintf(stderr, "Can't find an active partition!\n");
+    return EXIT_FAILURE;
+  }
+
+  type = mbr.partitions[activePartition].type;
+  sector = mbr.partitions[activePartition].lba_of_first_sector;
+  offset = sector * SECTOR_SIZE;
   
-  count = fread(&loaderBuffer, 1, LOADER_SIZE, loader);
-  if (count != LOADER_SIZE) {
-    fclose(image);
-    fclose(loader);
-    fprintf(stderr, "Wrong loader size (%d), should be %d!\n", count,
-      LOADER_SIZE);
-    return EXIT_FAILURE;
-  }
-  fclose(loader);
+  fprintf(stderr, "Found active partition: %d\n", activePartition);
+  fprintf(stderr, "Partition type        : 0x%x (%d)\n", type, type);
+  fprintf(stderr, "First sector          : 0x%x (%d)\n", sector, sector);
+  fprintf(stderr, "VBR's offset          : 0x%x (%d)\n", offset, offset);
 
-  memcpy(&mbr.code, &loaderBuffer, LOADER_SIZE);
+  fprintf(stderr, "Writing stage1 loader to MBR\n");
+  write_stage(image, 0, &stage1Buffer, STAGE1_SIZE);
 
-  fseek(image, 0, SEEK_SET);
-  count = fwrite(&mbr, MBR_SIZE, 1, image);
-  if (count != 1) {
-    fclose(image);
-    fprintf(stderr, "Can't write MBR!\n");
-    return EXIT_FAILURE;
-  }
+  fprintf(stderr, "Writing stage2 loader to active partition's VBR\n");
+  write_stage(image, offset, &stage2Buffer, STAGE2_SIZE);
 
   fclose(image);
 }
