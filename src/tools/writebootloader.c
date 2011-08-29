@@ -39,11 +39,16 @@
 #  define PACKED(x) x __attribute__((packed))
 #endif
 
+#define MBR_SIZE      512
+#define SECTOR_SIZE   512
+#define STAGE1_SIZE   446   // MBR's code block size
+#define STAGE2_SIZE   1024 // ext2 has free 2 sectors for VBR before superblock
 #define GET_SECTOR(sector)              (sector & 0x3f)
 #define GET_CYLINDER(sector, cylinder)  (((sector ^ 0x3f) << 2) | cylinder)
 
+
 PACKED(
-typedef struct mbr_entry_t {
+struct mbr_entry_t {
     uint8_t status;
     uint8_t start_head;
     uint8_t start_sector;
@@ -54,21 +59,21 @@ typedef struct mbr_entry_t {
     uint8_t end_cylinder;
     uint32_t lba_of_first_sector;
     uint32_t number_of_sectors;
-} mbr_entry_t;
-)
+}
+);
+typedef struct mbr_entry_t mbr_entry_t;
+
 
 PACKED(
-typedef struct mbr_t {
+struct mbr_t {
     uint8_t code[446];
     mbr_entry_t partitions[4];
     uint8_t signature[2];
-} mbr_t;
-)
+}
+);
 
-#define MBR_SIZE    512
-#define SECTOR_SIZE 512
-#define STAGE1_SIZE 446   // MBR's code block size
-#define STAGE2_SIZE 1024  // ext2 has free 2 sectors for VBR before superblock
+typedef struct mbr_t mbr_t;
+
 
 int32_t load_stage(const char *filename, void *buffer, size_t max_size)
 {
@@ -89,7 +94,7 @@ int32_t load_stage(const char *filename, void *buffer, size_t max_size)
 
   if (size != max_size) {
     fclose(file);
-    fprintf(stderr, "%s has wrong size, should be %d!\n", filename, max_size);
+    fprintf(stderr, "%s has wrong size, should be %ld!\n", filename, max_size);
     return ret;
   }
 
