@@ -150,8 +150,7 @@ int main(int argc, const char **argv)
 
   if (mbr.signature[1] != 0xaa && mbr.signature[0] != 0x55) {
     fclose(image);
-    fprintf(stderr, "Wrong MBR boot signature, should be 0x%2x%2x!\n", 0xaa,
-      0x55);
+    fprintf(stderr, "Wrong MBR boot signature, should be 0xaa55\n");
     return EXIT_FAILURE;
   }
 
