@@ -20,6 +20,8 @@ def configure(conf):
 def build(bld):
   if bld.cmd == 'run':
     dna.run_bochs(bld)
+  elif bld.cmd == 'debug':
+    dna.debug_bochs(bld)
   elif bld.cmd == 'mount':
     dna.vhd_mount(bld)
   elif bld.cmd == 'umount':

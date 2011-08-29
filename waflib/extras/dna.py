@@ -169,6 +169,10 @@ def run_bochs(bld):
   cmd = '"%s" -q -f "%s"' % (bld.env.BOCHS, bld.env.BOCHSRC)
   bld.exec_command(cmd)
 
+def debug_bochs(bld):
+  cmd = '"%s" -q -f "%s"' % (bld.env.BOCHS_DEBUG, bld.env.BOCHSRC)
+  bld.exec_command(cmd)
+
 def vhd_mount(bld):
   if not os.path.isfile(bld.env.TARGET_DISK_PATH):
     bld.fatal('Can\'t find VHD disk %s!' % bld.env.TARGET_DISK_PATH)
@@ -197,6 +201,7 @@ def configure(conf):
   conf.env.BOCHS_ROOT = conf.environ['BOCHS_ROOT']
 
   bochs = conf.find_program('bochs', var = 'BOCHS', path_list = [conf.env.BOCHS_ROOT])
+  bochsdbg = conf.find_program('bochsdbg', var = 'BOCHS_DEBUG', path_list = [conf.env.BOCHS_ROOT])
 
   cc = conf.find_program('x86_64-pc-dna-gcc', var = 'TARGET_CC', path_list = bin)
   cc = conf.cmd_to_list(cc)
@@ -251,6 +256,9 @@ class bootloader(link_task):
 
 class run(BuildContext):
   cmd = 'run'
+
+class debug(BuildContext):
+  cmd = 'debug'
 
 class mount(BuildContext):
   cmd = 'mount'
