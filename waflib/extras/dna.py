@@ -2,11 +2,12 @@
 # encoding: utf-8
 # Artur Wyszyński, 2011
 
-import os, sys, struct, array, uuid, time
-from waflib import Task, Utils
+import os, struct, array, uuid, time
+from waflib import Utils, Options, Context
 from waflib.Build import BuildContext
 from waflib.Configure import conf
 from waflib.Tools.ccroot import link_task
+
 
 # vhd creation based on vhd specification from microsoft
 def calculate_chs(total_sectors):
@@ -33,17 +34,17 @@ def calculate_chs(total_sectors):
   else:
     sectors_per_track = 17
     cylinder_times_heads = sectors / sectors_per_track
-    
+
     heads = (cylinder_times_heads + 1023) / 1024
-    
+
     if heads < 4:
       heads = 4
-    
+
     if (cylinder_times_heads >= (heads * 1024)) or (heads > 16):
       sectors_per_track = 31
       heads = 16
       cylinder_times_heads = sectors / sectors_per_track
-    
+
     if cylinder_times_heads >= (heads * 1024):
       sectors_per_track = 63
       heads = 16
@@ -53,11 +54,13 @@ def calculate_chs(total_sectors):
 
   return (cylinders, heads, sectors_per_track)
 
+
 @conf
 def find_crosstools_root(conf):
   if not 'DNA_CROSSTOOLS' in conf.environ:
     conf.fatal('DNA_CROSSTOOLS is not set!')
   return conf.environ['DNA_CROSSTOOLS']
+
 
 @conf
 def vhd_create(conf):
@@ -69,7 +72,6 @@ def vhd_create(conf):
   vhd_footer_size = 512
   sector_size = 512
   vhd_be_format = '>8sIIQI4sI4sQQHBBIi16sB427s'
-  vhd_be_format_size = struct.calcsize(vhd_be_format)
 
   requested_image_size = conf.env.TARGET_DISK_SIZE * 1024 * 1024
   requested_total_sectors = requested_image_size / sector_size
@@ -77,7 +79,7 @@ def vhd_create(conf):
   cylinders, heads, sectors_per_track = calculate_chs(requested_total_sectors)
 
   image_size = cylinders * sector_size * heads * sectors_per_track
-  image_total_sectors = image_size / sector_size
+#  image_total_sectors = image_size / sector_size
 
 #  print('Requested image size: %d KB' % (requested_image_size / 1024))
 #  print('Rounded image size  : %d KB' % (image_size / 1024))
@@ -89,7 +91,7 @@ def vhd_create(conf):
   seconds_now = time.mktime(time.localtime())
   seconds_start = time.mktime(time.strptime('1 Jan 00 12', '%d %b %y %H'))
   seconds_since = seconds_now - seconds_start
- 
+
   cookie = 'conectix'
   features = 0x2
   file_format_version = 0x10000
@@ -118,7 +120,7 @@ def vhd_create(conf):
   bytes_array = array.array('B', vhd_footer)
   for i in range(len(vhd_footer)):
     checksum = checksum + bytes_array[i]
-  old_checksum = checksum
+#  old_checksum = checksum
   checksum = ~checksum
 
   vhd_footer = struct.pack(vhd_be_format, cookie, features, file_format_version,
@@ -137,16 +139,22 @@ def vhd_create(conf):
   image.write(vhd_footer)
   image.close()
 
-  cmd = ('%s %s %s' % (conf.env.VHD_CREATE, conf.env.TARGET_DISK_PATH, conf.env.TARGET_DISK_MOUNT))
+  if Options.platform == 'win32':
+    cmd = ('%s %s %s' % (conf.env.VHD_CREATE, conf.env.TARGET_DISK_PATH,
+      conf.env.TARGET_DISK_MOUNT))
+  else:
+    cmd = ('%s %s %s %s %s %s' % (conf.env.VHD_CREATE,
+      conf.env.TARGET_DISK_PATH, cylinders, heads, sectors_per_track,
+      conf.env.TARGET_DISK_MOUNT))
   conf.exec_command(cmd)
 
   conf.end_msg('%s MB, ext2' % conf.env.TARGET_DISK_SIZE)
+
 
 @conf
 def generate_bochsrc(conf):
   conf.start_msg('Creating bochsrc file')
 
-  vhd_footer_size = 512
   sector_size = 512
   sectors_per_track = 63
   heads = 16
@@ -161,47 +169,84 @@ def generate_bochsrc(conf):
 
   bochsrc = conf.path.get_bld().make_node('dna.bxrc')
   bochsrc.write(content)
-  
+
   conf.end_msg(bochsrc.abspath())
   return bochsrc.abspath()
+
 
 def run_bochs(bld):
   cmd = '"%s" -q -f "%s"' % (bld.env.BOCHS, bld.env.BOCHSRC)
   bld.exec_command(cmd)
 
+
 def debug_bochs(bld):
   cmd = '"%s" -q -f "%s"' % (bld.env.BOCHS_DEBUG, bld.env.BOCHSRC)
   bld.exec_command(cmd)
 
+
 def vhd_mount(bld):
   if not os.path.isfile(bld.env.TARGET_DISK_PATH):
     bld.fatal('Can\'t find VHD disk %s!' % bld.env.TARGET_DISK_PATH)
-  cmd = ('%s %s %s' % (bld.env.VHD_MOUNT, bld.env.TARGET_DISK_PATH, bld.env.TARGET_DISK_MOUNT))
+  if vhd_is_mounted(bld):
+    return
+  if Options.platform == 'win32':
+    cmd = ('%s %s %s' % (bld.env.VHD_MOUNT, bld.env.TARGET_DISK_PATH,
+      bld.env.TARGET_DISK_MOUNT))
+  else:
+    cmd = ('%s %s %s' % (bld.env.VHD_MOUNT, bld.env.TARGET_DISK_PATH,
+      bld.env.TARGET_DISK_MOUNT))
   bld.exec_command(cmd)
 
+
 def vhd_umount(bld):
+  if not vhd_is_mounted(bld):
+    return
   if not os.path.isfile(bld.env.TARGET_DISK_PATH):
     bld.fatal('Can\'t find VHD disk %s!' % bld.env.TARGET_DISK_PATH)
-  cmd = ('%s %s' % (bld.env.VHD_UMOUNT, bld.env.TARGET_DISK_PATH))
+  if Options.platform == 'win32':
+    cmd = ('%s %s' % (bld.env.VHD_UMOUNT, bld.env.TARGET_DISK_PATH))
+  else:
+    cmd = ('%s %s' % (bld.env.VHD_UMOUNT, bld.env.TARGET_DISK_MOUNT))
   bld.exec_command(cmd)
+
+
+def vhd_is_mounted(bld):
+  if Options.platform == 'linux':
+    df = bld.cmd_and_log('df', output = Context.STDOUT, quiet = Context.BOTH)
+    return bld.env.TARGET_DISK_MOUNT in df
+  else:
+    return 1 # for now
+
 
 def options(opt):
   opt.load('compiler_c compiler_cxx nasm  msvs')
   pass
 
+
 def configure(conf):
+  platform = Options.platform
+
+  if platform == 'linux':
+    groups = conf.cmd_and_log('groups', output = Context.STDOUT, quiet = Context.BOTH)
+    if not 'disk' in groups:
+      conf.fatal('You need to be in `disk` group to use losetup.\n'
+        'Run \'sudo usermod -a -G disk <your username>\' and relog.')
+
   conf.load('compiler_c compiler_cxx nasm')
 
   conf.env.CROSSTOOLS_ROOT = conf.find_crosstools_root()
   bin = os.path.join(conf.env.CROSSTOOLS_ROOT, 'bin')
   scripts = os.path.join(conf.path.abspath(), 'scripts')
-  
-  if not 'BOCHS_ROOT' in conf.environ:
-    conf.fatal('Set BOCHS_ROOT to your Bochs installation directory!')
-  conf.env.BOCHS_ROOT = conf.environ['BOCHS_ROOT']
 
-  bochs = conf.find_program('bochs', var = 'BOCHS', path_list = [conf.env.BOCHS_ROOT])
-  bochsdbg = conf.find_program('bochsdbg', var = 'BOCHS_DEBUG', path_list = [conf.env.BOCHS_ROOT])
+  if platform == 'win32':
+    if not 'BOCHS_ROOT' in conf.environ:
+      conf.fatal('Set BOCHS_ROOT to your Bochs installation directory!')
+    conf.env.BOCHS_ROOT = conf.environ['BOCHS_ROOT']
+
+    conf.find_program('bochs', var = 'BOCHS', path_list = [conf.env.BOCHS_ROOT])
+    conf.find_program('bochsdbg', var = 'BOCHS_DEBUG', path_list = [conf.env.BOCHS_ROOT])
+  else:
+    conf.find_program('bochs', var = 'BOCHS')
 
   cc = conf.find_program('x86_64-pc-dna-gcc', var = 'TARGET_CC', path_list = bin)
   cc = conf.cmd_to_list(cc)
@@ -221,7 +266,7 @@ def configure(conf):
   ld = conf.find_program('x86_64-pc-dna-ld', var = 'TARGET_LD', path_list = bin)
   ld = conf.cmd_to_list(ld)
   conf.env.TARGET_LD = ld
-  
+
   create = conf.find_program('vhd-create', var = 'VHD_CREATE', path_list = scripts)
   conf.env.VHD_CREATE = create
 
@@ -231,37 +276,54 @@ def configure(conf):
   umount = conf.find_program('vhd-umount', var = 'VHD_UMOUNT', path_list = scripts)
   conf.env.VHD_UMOUNT = umount
 
+  if platform == 'linux':
+    conf.find_program('sfdisk')
+    conf.find_program('losetup')
+    conf.find_program('fusermount')
+    conf.find_program('fuseext2')
+
   conf.env.TARGET_DISK_IMAGE = 'disk.vhd'
   conf.env.TARGET_DISK_SIZE = 256
-  conf.env.TARGET_DISK_MOUNT = 'Z'
-  
+  if platform == 'win32':
+    conf.env.TARGET_DISK_MOUNT = 'Z'
+  else:
+    conf.env.TARGET_DISK_MOUNT = conf.path.make_node('mnt').abspath()
+
   conf.start_msg('Setting target VHD image path to')
-  conf.env.TARGET_DISK_PATH = conf.path.make_node(conf.env.TARGET_DISK_IMAGE).abspath()
+  conf.env.TARGET_DISK_PATH = conf.path.get_bld().make_node(conf.env.TARGET_DISK_IMAGE).abspath()
   conf.end_msg(conf.env.TARGET_DISK_PATH)
 
   conf.vhd_create()
-  
+
   conf.env.BOCHSRC = conf.generate_bochsrc()
 
   conf.start_msg('Setting prefix to')
-  conf.env.PREFIX = '%s:\\' % conf.env.TARGET_DISK_MOUNT
+  if platform == 'win32':
+    conf.env.PREFIX = '%s:\\' % conf.env.TARGET_DISK_MOUNT
+  else:
+    conf.env.PREFIX = '%s/' % conf.env.TARGET_DISK_MOUNT
   conf.options.prefix = conf.env.PREFIX
   conf.end_msg(conf.env.PREFIX)
+
 
 class bootloader(link_task):
   run_str = 'cp ${SRC} ${TGT}'
   ext_out = ['.bin']
   inst_to = '${BINDIR}'
-  chmod   = Utils.O755
+  chmod = Utils.O755
+
 
 class run(BuildContext):
   cmd = 'run'
 
+
 class debug(BuildContext):
   cmd = 'debug'
 
+
 class mount(BuildContext):
   cmd = 'mount'
+
 
 class umount(BuildContext):
   cmd = 'umount'
