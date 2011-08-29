@@ -1,0 +1,46 @@
+﻿crosstools build instructions:
+
+- download binutils 2.21.1 (http://ftp.gnu.org/gnu/binutils/binutils-2.21.1.tar.bz2)
+- download gcc-core (http://ftp.gnu.org/gnu/gcc/gcc-4.6.1/gcc-core-4.6.1.tar.bz2)
+- download gcc-g++ (http://ftp.gnu.org/gnu/gcc/gcc-4.6.1/gcc-g++-4.6.1.tar.bz2)
+
+# to speed up build process run make -jN where N is number of your cpu cores * 2 + 1,
+# example: i've got 8 core machine, so for me its make -j17
+
+$ sudo apt-get install build-essentials python yasm bochs
+$ sudo apt-get build-dep binutils gcc-4.5
+
+$ mkdir -p crosstools/build-{binutils,gcc}
+$ export TARGET=x86_64-pc-dna
+$ export PREFIX=/usr/local/crosstools
+$ cd crosstools
+$ mv /path/where/you/downloaded/files/*.tar* .
+$ bunzip2 *.bz2
+$ gunzip *.gz
+$ tar xvf binutils-2.21.1.tar
+$ tar xvf gcc-core-4.6.1.tar
+$ tar xvf gcc-g++-4.6.1.tar
+$ cp /path/where/you/cloned/dna/crosstools/*.patch .
+
+$ cd ../binutils-2.21.1
+$ patch -p1 < ../binutils-dna.patch
+$ cd ../build-binutils
+$ ../binutils-2.21.1/configure --disable-nls --prefix=$PREFIX --target=$TARGET
+$ make -jN all && sudo make install
+
+$ cd ../gcc-4.6.1
+$ patch -p1 < ../gcc-dna.patch
+$ cd ../build-gcc
+$ export PATH=$PATH:$PREFIX/bin
+$ ../gcc-4.6.1/configure --prefix=$PREFIX --target=$TARGET --disable-nls \
+--enable-languages=c,c++ --without-headers --enable-linker-build-id \
+--enable-clocale=gnu --enable-plugin --enable-gold --enable-ld=default \
+--with-plugin-ld=ld.gold
+$ make -jN all-gcc
+$ sudo make install-gcc
+$ make -jN all-target-libgcc
+$ sudo make install-target-libgcc
+$ export DNA_CROSSTOOLS=/usr/local/crosstools
+
+done!
+
