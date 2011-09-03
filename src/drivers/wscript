@@ -1,6 +1,0 @@
-﻿#! /usr/bin/env python
-# encoding: utf-8
-# Artur Wyszyński, 2011
-
-def build(bld):
-  pass
