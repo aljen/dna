@@ -1,0 +1,17 @@
+OBJDIRS += tools
+
+WRITEBOOTLOADER_OBJS := $(OBJDIR)/tools/writebootloader.o
+VHD_INFO_OBJS := $(OBJDIR)/tools/vhd_info.o
+
+$(OBJDIR)/tools/writebootloader: $(WRITEBOOTLOADER_OBJS)
+	@echo "$(MSG_HOST_LD) $@"
+	$(VERBOSE)$(HOST_CC) $(HOST_CFLAGS) -o $@ $<
+
+$(OBJDIR)/tools/vhd_info: $(VHD_INFO_OBJS)
+	@echo "$(MSG_HOST_LD) $@"
+	$(VERBOSE)$(HOST_CXX) $(HOST_CXXFLAGS) -o $@ $<
+
+all: $(OBJDIR)/tools/writebootloader $(OBJDIR)/tools/vhd_info
+
+-include $(WRITEBOOTLOADER_OBJS:.o=.d)
+-include $(VHD_INFO_OBJS:.o=.d)

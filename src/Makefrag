@@ -1,0 +1,10 @@
+MODULES := apps drivers kernel loader servers tools
+
+#include $(foreach module, $(MODULES), $(eval $(module)/Makefrag)))
+
+#include src/apps/Makefrag
+#include src/drivers/Makefrag
+#include src/kernel/Makefrag
+include src/loader/Makefrag
+#include src/servers/Makefrag
+include src/tools/Makefrag
