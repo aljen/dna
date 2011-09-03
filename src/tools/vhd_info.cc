@@ -35,6 +35,12 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#  define PACKED(x) __pragma(pack(push, 1)) x __pragma(pack(pop))
+#else
+#  define PACKED(x) x __attribute__((packed))
+#endif
+
 #define GET_SECTOR(sector)              (sector & 0x3f)
 #define GET_CYLINDER(sector, cylinder)  (((sector ^ 0x3f) << 2) | cylinder)
 
@@ -199,7 +205,7 @@ int main(int argc, const char **argv)
   size_t count = fread(&mbr, 1, sizeof(mbr), image);
   if (count != sizeof(mbr)) {
     fclose(image);
-    fprintf(stderr, "%s: ERROR: Can't read MBR!\n");
+    fprintf(stderr, "%s: ERROR: Can't read MBR!\n", argv[0]);
     return EXIT_FAILURE;
   }
 
