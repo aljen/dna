@@ -47,8 +47,11 @@
 #define GET_CYLINDER(sector, cylinder)  (((sector ^ 0x3f) << 2) | cylinder)
 
 
-PACKED(
-struct mbr_entry_t {
+size_t load_stage(const char *filename, void *buffer, ssize_t max_size);
+size_t write_stage(FILE *file, size_t offset, const void *src, long max_size);
+
+
+typedef struct mbr_entry_t {
     uint8_t status;
     uint8_t start_head;
     uint8_t start_sector;
@@ -59,9 +62,7 @@ struct mbr_entry_t {
     uint8_t end_cylinder;
     uint32_t lba_of_first_sector;
     uint32_t number_of_sectors;
-}
-);
-typedef struct mbr_entry_t mbr_entry_t;
+} mbr_entry_t;
 
 
 PACKED(
@@ -75,10 +76,10 @@ struct mbr_t {
 typedef struct mbr_t mbr_t;
 
 
-int32_t load_stage(const char *filename, void *buffer, size_t max_size)
+size_t load_stage(const char *filename, void *buffer, long max_size)
 {
-  int32_t ret = -1;
-  size_t size = 0;
+  size_t ret = 0;
+  ssize_t size = 0;
   FILE *file = fopen(filename, "rb");
 
   fprintf(stderr, "Loading %s\n", filename);
@@ -98,16 +99,16 @@ int32_t load_stage(const char *filename, void *buffer, size_t max_size)
     return ret;
   }
 
-  ret = fread(buffer, 1, max_size, file);
+  ret = fread(buffer, 1, (size_t)max_size, file);
   fclose(file);
   
   return ret;
 }
 
-int32_t write_stage(FILE *file, int32_t offset, const void *src, size_t max_size)
+size_t write_stage(FILE *file, size_t offset, const void *src, long max_size)
 {
-  fseek(file, offset, SEEK_SET);
-  return fwrite(src, max_size, 1, file);
+  fseek(file, (long)offset, SEEK_SET);
+  return fwrite(src, (size_t)max_size, 1, file);
 }
 
 int main(int argc, const char **argv)
@@ -118,7 +119,7 @@ int main(int argc, const char **argv)
   uint8_t stage1Buffer[STAGE1_SIZE];
   uint8_t stage2Buffer[STAGE2_SIZE];
   int8_t activePartition = -1;
-  uint32_t offset = 0;
+  size_t offset = 0;
   uint32_t sector = 0;
   uint8_t type = 0;
   int8_t i = 0;
@@ -133,10 +134,10 @@ int main(int argc, const char **argv)
   memset(&stage1Buffer, 0, STAGE1_SIZE);
   memset(&stage2Buffer, 0, STAGE2_SIZE);
 
-  if (load_stage(argv[2], &stage1Buffer, STAGE1_SIZE) < 0)
+  if (load_stage(argv[2], &stage1Buffer, STAGE1_SIZE) == 0)
     return EXIT_FAILURE;
   
-  if (load_stage(argv[3], &stage2Buffer, STAGE2_SIZE) < 0)
+  if (load_stage(argv[3], &stage2Buffer, STAGE2_SIZE) == 0)
     return EXIT_FAILURE;
 
   fprintf(stderr, "Opening %s\n", argv[1]);
@@ -179,7 +180,7 @@ int main(int argc, const char **argv)
   fprintf(stderr, "Found active partition: %d\n", activePartition);
   fprintf(stderr, "Partition type        : 0x%x (%d)\n", type, type);
   fprintf(stderr, "First sector          : 0x%x (%d)\n", sector, sector);
-  fprintf(stderr, "VBR's offset          : 0x%x (%d)\n", offset, offset);
+  fprintf(stderr, "VBR's offset          : 0x%lx (%ld)\n", offset, offset);
 
   fprintf(stderr, "Writing stage1 loader to MBR\n");
   write_stage(image, 0, &stage1Buffer, STAGE1_SIZE);

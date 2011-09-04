@@ -44,19 +44,15 @@
 #define GET_SECTOR(sector)              (sector & 0x3f)
 #define GET_CYLINDER(sector, cylinder)  (((sector ^ 0x3f) << 2) | cylinder)
 
-PACKED(
-struct disk_geometry_t {
+
+typedef struct disk_geometry_t {
   uint16_t cylinder;
   uint8_t heads;
   uint8_t sectors_per_track;
-}
-);
-
-typedef struct disk_geometry_t disk_geometry_t;
+} disk_geometry_t;
 
 
-PACKED(
-struct mbr_entry_t {
+typedef struct mbr_entry_t {
     uint8_t status;
     uint8_t start_head;
     uint8_t start_sector;
@@ -67,9 +63,7 @@ struct mbr_entry_t {
     uint8_t end_cylinder;
     uint32_t lba_of_first_sector;
     uint32_t number_of_sectors;
-}
-);
-typedef struct mbr_entry_t mbr_entry_t;
+} mbr_entry_t;
 
 
 PACKED(
@@ -83,20 +77,22 @@ struct mbr_t {
 typedef struct mbr_t mbr_t;
 
 
-disk_geometry_t calculate_chs(uint32_t total_sectors)
+void calculate_chs(disk_geometry_t &geometry, int64_t total_sectors);
+void print_partition(const mbr_t &mbr, uint8_t index);
+
+void calculate_chs(disk_geometry_t &geometry, int64_t total_sectors)
 {
   const uint16_t CYLINDERS = 65535;
   const uint8_t HEADS = 16;
   const uint8_t SECTORS1 = 255;
   const uint8_t SECTORS2 = 63;
-  const uint32_t TOTAL_SECTORS1 = CYLINDERS * HEADS * SECTORS1;
-  const uint32_t TOTAL_SECTORS2 = CYLINDERS * HEADS * SECTORS2;
+  const int64_t TOTAL_SECTORS1 = CYLINDERS * HEADS * SECTORS1;
+  const int64_t TOTAL_SECTORS2 = CYLINDERS * HEADS * SECTORS2;
 
   uint8_t sectors_per_track = 0;
   uint8_t heads = 0;
-  uint32_t cylinder_times_heads = 0;
+  int64_t cylinder_times_heads = 0;
   uint16_t cylinders = 0;
-  disk_geometry_t geometry;
 
   if (total_sectors > TOTAL_SECTORS1)
     total_sectors = TOTAL_SECTORS1;
@@ -109,7 +105,7 @@ disk_geometry_t calculate_chs(uint32_t total_sectors)
     sectors_per_track = 17;
     cylinder_times_heads = total_sectors / sectors_per_track;
 
-    heads = (cylinder_times_heads + 1023) / 1024;
+    heads = (uint8_t)((cylinder_times_heads + 1023) / 1024);
 
     if (heads < 4)
       heads = 4;
@@ -127,13 +123,11 @@ disk_geometry_t calculate_chs(uint32_t total_sectors)
     }
   }
 
-  cylinders = cylinder_times_heads / heads;
+  cylinders = (uint16_t)(cylinder_times_heads / heads);
 
   geometry.cylinder = cylinders;
   geometry.heads = heads;
   geometry.sectors_per_track = sectors_per_track;
-
-  return geometry;
 }
 
 void print_partition(const mbr_t &mbr, uint8_t index)
@@ -152,28 +146,52 @@ void print_partition(const mbr_t &mbr, uint8_t index)
   if (mbr.partitions[index].type != 0) {
     if (index != 3) {
       fprintf(stderr, " |-.[ partition #%d:\n", index);
-      fprintf(stderr, " | `.[ status               : 0x%02x (%3d)\n", status, status);
-      fprintf(stderr, " |  |-[ type                : 0x%02x (%3d)\n", type, type);
-      fprintf(stderr, " |  |-[ start head          : 0x%02x (%3d)\n", start_head, start_head);
-      fprintf(stderr, " |  |-[ start sector        : 0x%02x (%3d)\n", GET_SECTOR(start_sector), GET_SECTOR(start_sector));
-      fprintf(stderr, " |  |-[ start cylinder      : 0x%02x (%3d)\n", GET_CYLINDER(start_sector, start_cylinder), GET_CYLINDER(start_sector, start_cylinder));
-      fprintf(stderr, " |  |-[ end head            : 0x%02x (%3d)\n", end_head, end_head);
-      fprintf(stderr, " |  |-[ end sector          : 0x%02x (%3d)\n", GET_SECTOR(end_sector), GET_SECTOR(end_sector));
-      fprintf(stderr, " |  |-[ end cylinder        : 0x%02x (%3d)\n", GET_CYLINDER(end_sector, end_cylinder), GET_CYLINDER(end_sector, end_cylinder));
-      fprintf(stderr, " |  |-[ lba of first sector : 0x%02x (%3d)\n", lba_of_first_sector, lba_of_first_sector);
-      fprintf(stderr, " |  `-[ number of sectors   : 0x%02x (%3d)\n", number_of_sectors, number_of_sectors);
+      fprintf(stderr, " | `.[ status               : 0x%02x (%3d)\n", status,
+        status);
+      fprintf(stderr, " |  |-[ type                : 0x%02x (%3d)\n", type,
+        type);
+      fprintf(stderr, " |  |-[ start head          : 0x%02x (%3d)\n",
+        start_head, start_head);
+      fprintf(stderr, " |  |-[ start sector        : 0x%02x (%3d)\n",
+        GET_SECTOR(start_sector), GET_SECTOR(start_sector));
+      fprintf(stderr, " |  |-[ start cylinder      : 0x%02x (%3d)\n",
+        GET_CYLINDER(start_sector, start_cylinder), GET_CYLINDER(start_sector,
+        start_cylinder));
+      fprintf(stderr, " |  |-[ end head            : 0x%02x (%3d)\n", end_head,
+        end_head);
+      fprintf(stderr, " |  |-[ end sector          : 0x%02x (%3d)\n",
+        GET_SECTOR(end_sector), GET_SECTOR(end_sector));
+      fprintf(stderr, " |  |-[ end cylinder        : 0x%02x (%3d)\n",
+        GET_CYLINDER(end_sector, end_cylinder), GET_CYLINDER(end_sector,
+        end_cylinder));
+      fprintf(stderr, " |  |-[ lba of first sector : 0x%02x (%3d)\n",
+        lba_of_first_sector, lba_of_first_sector);
+      fprintf(stderr, " |  `-[ number of sectors   : 0x%02x (%3d)\n",
+        number_of_sectors, number_of_sectors);
     } else {
       fprintf(stderr, " `-.[ partition #%d:\n", index);
-      fprintf(stderr, "   `.[ status               : 0x%02x (%3d)\n", status, status);
-      fprintf(stderr, "    |-[ type                : 0x%02x (%3d)\n", type, type);
-      fprintf(stderr, "    |-[ start head          : 0x%02x (%3d)\n", start_head, start_head);
-      fprintf(stderr, "    |-[ start sector        : 0x%02x (%3d)\n", GET_SECTOR(start_sector), GET_SECTOR(start_sector));
-      fprintf(stderr, "    |-[ start cylinder      : 0x%02x (%3d)\n", GET_CYLINDER(start_sector, start_cylinder), GET_CYLINDER(start_sector, start_cylinder));
-      fprintf(stderr, "    |-[ end head            : 0x%02x (%3d)\n", end_head, end_head);
-      fprintf(stderr, "    |-[ end sector          : 0x%02x (%3d)\n", GET_SECTOR(end_sector), GET_SECTOR(end_sector));
-      fprintf(stderr, "    |-[ end cylinder        : 0x%02x (%3d)\n", GET_CYLINDER(end_sector, end_cylinder), GET_CYLINDER(end_sector, end_cylinder));
-      fprintf(stderr, "    |-[ lba of first sector : 0x%02x (%3d)\n", lba_of_first_sector, lba_of_first_sector);
-      fprintf(stderr, "    `-[ number of sectors   : 0x%02x (%3d)\n", number_of_sectors, number_of_sectors);
+      fprintf(stderr, "   `.[ status               : 0x%02x (%3d)\n", status,
+        status);
+      fprintf(stderr, "    |-[ type                : 0x%02x (%3d)\n", type,
+        type);
+      fprintf(stderr, "    |-[ start head          : 0x%02x (%3d)\n",
+        start_head, start_head);
+      fprintf(stderr, "    |-[ start sector        : 0x%02x (%3d)\n",
+        GET_SECTOR(start_sector), GET_SECTOR(start_sector));
+      fprintf(stderr, "    |-[ start cylinder      : 0x%02x (%3d)\n",
+        GET_CYLINDER(start_sector, start_cylinder), GET_CYLINDER(start_sector,
+        start_cylinder));
+      fprintf(stderr, "    |-[ end head            : 0x%02x (%3d)\n", end_head,
+        end_head);
+      fprintf(stderr, "    |-[ end sector          : 0x%02x (%3d)\n",
+        GET_SECTOR(end_sector), GET_SECTOR(end_sector));
+      fprintf(stderr, "    |-[ end cylinder        : 0x%02x (%3d)\n",
+        GET_CYLINDER(end_sector, end_cylinder), GET_CYLINDER(end_sector,
+        end_cylinder));
+      fprintf(stderr, "    |-[ lba of first sector : 0x%02x (%3d)\n",
+        lba_of_first_sector, lba_of_first_sector);
+      fprintf(stderr, "    `-[ number of sectors   : 0x%02x (%3d)\n",
+        number_of_sectors, number_of_sectors);
     }
   } else {
     if (index != 3)
@@ -205,23 +223,28 @@ int main(int argc, const char **argv)
   size_t count = fread(&mbr, 1, sizeof(mbr), image);
   if (count != sizeof(mbr)) {
     fclose(image);
-    fprintf(stderr, "%s: ERROR: Can't read MBR!\n", argv[0]);
+    fprintf(stderr, "%s: ERROR: Can't read MBR!\n", image_name);
     return EXIT_FAILURE;
   }
 
-    if (mbr.signature[1] != 0xaa && mbr.signature[0] != 0x55) {
-        fprintf(stderr, "%s: WARNING: MBR boot signature should be 0xaa55!\n", image_name);
+  if (mbr.signature[1] != 0xaa && mbr.signature[0] != 0x55) {
+    fprintf(stderr, "%s: WARNING: MBR boot signature should be 0xaa55!\n",
+      image_name);
   }
 
   fseek(image, 0, SEEK_END);
-  uint32_t image_size = ftell(image);
+  int64_t image_size = ftell(image);
 
   const uint16_t sector_size = 512;
-  uint32_t total_sectors = image_size / sector_size;
-  disk_geometry_t geometry = calculate_chs(total_sectors);
+  int64_t total_sectors = image_size / sector_size;
+  disk_geometry_t geometry;
+  calculate_chs(geometry, total_sectors);
 
-  fprintf(stderr, "%s [cylinders: %d] [heads: %d] [spt: %d] [sectors: %d]\n", image_name, geometry.cylinder, geometry.heads, geometry.sectors_per_track, total_sectors);
-  fprintf(stderr, "[*] Partitions table (boot signature: 0x%02x%02x)\n", mbr.signature[1], mbr.signature[0]);
+  fprintf(stderr, "%s [cylinders: %d] [heads: %d] [spt: %d] [sectors: %ld]\n",
+    image_name, geometry.cylinder, geometry.heads, geometry.sectors_per_track,
+    total_sectors);
+  fprintf(stderr, "[*] Partitions table (boot signature: 0x%02x%02x)\n",
+    mbr.signature[1], mbr.signature[0]);
   print_partition(mbr, 0);
   print_partition(mbr, 1);
   print_partition(mbr, 2);
