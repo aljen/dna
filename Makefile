@@ -3,8 +3,8 @@
 # Recursive Make Considered Harmful (http://aegis.sourceforge.net/auug97.pdf)
 # Managing Projects with GNU Make, 3rd Edition
 
-TOP							= .
-BUILD					:= build
+TOP    = .
+BUILD := build
 
 include mk/env.mk
 include mk/rules.mk

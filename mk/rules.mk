@@ -1,8 +1,8 @@
 # common rules
 
-MODULE_DIRS :=
-DEPENDENCIES :=
-MODULE_CFLAGS :=
+MODULE_DIRS     :=
+DEPENDENCIES    :=
+MODULE_CFLAGS   :=
 MODULE_CXXFLAGS :=
 
 # $(subdirectory)
@@ -155,3 +155,4 @@ print_objs_recipes:
 	@echo "$(MSG_DEPS_CC) file.d"
 	@echo "$(MSG_DEPS_CXX) file.d"
 	@echo "$(MSG_YASM) file.bin"
+
