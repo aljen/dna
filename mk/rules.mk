@@ -45,9 +45,9 @@ endef
 
 # $(call host-deps-c, source.c)
 define host-deps-c
-  DEPENDENCIES += $(subst .o,.d,$(call source-to-object,$1))
-  $(subst .o,.d,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
-	| $(dir $(subst .o,.d,$(call source-to-object,$1)))
+  DEPENDENCIES += $(subst .o,.deps,$(call source-to-object,$1))
+  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
+	| $(dir $(subst .o,.deps,$(call source-to-object,$1)))
 		@echo "$(MSG_DEPS_CC) $$@"
 		$(V)$(HOST_CC) $(HOST_CFLAGS) $(MODULE_CFLAGS) -MM -MF $$@ -MT \
 			$(call source-to-object,$1) $$<
@@ -55,9 +55,9 @@ endef
 
 # $(call host-deps-cxx, source.{cc,cpp})
 define host-deps-cxx
-  DEPENDENCIES += $(subst .o,.d,$(call source-to-object,$1))
-  $(subst .o,.d,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
-	| $(dir $(subst .o,.d,$(call source-to-object,$1)))
+  DEPENDENCIES += $(subst .o,.deps,$(call source-to-object,$1))
+  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
+	| $(dir $(subst .o,.deps,$(call source-to-object,$1)))
 		@echo "$(MSG_DEPS_CXX) $$@"
 		$(V)$(HOST_CXX) $(HOST_CXXFLAGS) $(MODULE_CXXFLAGS) -MM -MF $$@\
 			-MT $(call source-to-object,$1) $$<
@@ -152,7 +152,7 @@ print_objs_recipes:
 	@echo "$(MSG_TARGET_CC) file.o"
 	@echo "$(MSG_TARGET_CXX) file.o"
 	@echo "$(MSG_TARGET_LD) target"
-	@echo "$(MSG_DEPS_CC) file.d"
-	@echo "$(MSG_DEPS_CXX) file.d"
+	@echo "$(MSG_DEPS_CC) file.deps"
+	@echo "$(MSG_DEPS_CXX) file.deps"
 	@echo "$(MSG_YASM) file.bin"
 

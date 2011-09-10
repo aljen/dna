@@ -15,6 +15,7 @@ DISKMOUNTPATH  := mnt
 TARGET_AR      := x86_64-pc-hitomi-ar
 TARGET_AS      := x86_64-pc-hitomi-as
 TARGET_CC      := x86_64-pc-hitomi-gcc
+TARGET_GDC     := x86_64-pc-hitomi-gdc
 TARGET_CPP     := $(TARGET_CC) -E
 TARGET_CXX     := x86_64-pc-hitomi-g++
 TARGET_LD      := x86_64-pc-hitomi-ld
