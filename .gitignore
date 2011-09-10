@@ -1,5 +1,5 @@
-build*/
+build/
+crosstools/temp
 *.pyc
 *.vhd
-.lock-*
 
