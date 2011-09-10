@@ -1,0 +1,78 @@
+diff -ruN gcc-4.6.1-orig/config.sub gcc-4.6.1/config.sub
+--- gcc-4.6.1-orig/config.sub	2010-05-25 15:22:07.000000000 +0200
++++ gcc-4.6.1/config.sub	2011-08-22 17:50:43.191602900 +0200
+@@ -1297,7 +1297,7 @@
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* \
+ 	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
+-	      | -aos* | -aros* \
++	      | -aos* | -aros* | -hitomi* \
+ 	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
+ 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
+ 	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \
+@@ -1550,6 +1550,9 @@
+ 	*-haiku)
+ 		os=-haiku
+ 		;;
++	*-hitomi)
++		os=-hitomi
++		;;
+ 	*-ibm)
+ 		os=-aix
+ 		;;
+diff -ruN gcc-4.6.1-orig/gcc/config/hitomi.h gcc-4.6.1/gcc/config/hitomi.h
+--- gcc-4.6.1-orig/gcc/config/hitomi.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.6.1/gcc/config/hitomi.h	2011-08-22 21:31:31.214346500 +0200
+@@ -0,0 +1,13 @@
++#undef TARGET_OS_CPP_BUILTINS
++#define TARGET_OS_CPP_BUILTINS()          \
++    do {                                  \
++        builtin_define_std ("hitomi");    \
++        builtin_define_std ("unix");      \
++        builtin_define ("__HITOMI__");    \
++        builtin_define ("__x86_64__");    \
++        builtin_assert ("system=hitomi"); \
++        builtin_assert ("system=unix");   \
++    } while(0);
++
++#undef TARGET_VERSION
++#define TARGET_VERSION fprintf(stderr, " (x86_64 Hitomi/ELF)");
+diff -ruN gcc-4.6.1-orig/gcc/config.gcc gcc-4.6.1/gcc/config.gcc
+--- gcc-4.6.1-orig/gcc/config.gcc	2011-05-22 22:03:43.000000000 +0200
++++ gcc-4.6.1/gcc/config.gcc	2011-08-22 17:55:02.792451300 +0200
+@@ -694,6 +694,12 @@
+     *) echo 'Unknown thread configuration for VxWorks'; exit 1 ;;
+   esac
+   ;;
++*-*-hitomi*)
++  extra_parts="crtbegin.o crtend.o"
++  gas=yes
++  gnu_ld=yes
++  default_use_cxa_atexit=yes
++  ;;
+ *-*-elf)
+   # Assume that newlib is being used and so __cxa_atexit is provided.
+   default_use_cxa_atexit=yes
+@@ -1210,6 +1216,10 @@
+ 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h"
+ 	tmake_file="${tmake_file} i386/t-i386elf t-svr4"
+ 	;;
++x86_64-*-hitomi*)
++	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h hitomi.h"
++	tmake_file="${tmake_file} i386/t-i386elf t-svr4"
++	;;
+ i[34567]86-*-freebsd*)
+ 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h ${fbsd_tm_file} i386/freebsd.h"
+ 	tmake_file="${tmake_file} i386/t-crtstuff"
+diff -ruN gcc-4.6.1-orig/libgcc/config.host gcc-4.6.1/libgcc/config.host
+--- gcc-4.6.1-orig/libgcc/config.host	2011-03-14 07:06:23.000000000 +0100
++++ gcc-4.6.1/libgcc/config.host	2011-08-22 20:00:32.208109200 +0200
+@@ -281,6 +281,8 @@
+ 	;;
+ x86_64-*-elf*)
+ 	;;
++x86_64-*-hitomi*)
++	;;
+ i[34567]86-*-freebsd*)
+ 	tmake_file="${tmake_file} i386/t-freebsd"
+ 	;;

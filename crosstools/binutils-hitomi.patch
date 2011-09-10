@@ -5,7 +5,7 @@ diff -ruN binutils-2.21.1-orig/bfd/config.bfd binutils-2.21.1/bfd/config.bfd
      want64=true
      targ_underscore=no
      ;;
-+  x86_64-*-dna*)
++  x86_64-*-hitomi*)
 +    targ_defvec=bfd_elf64_x86_64_vec
 +    targ_selvecs="bfd_elf32_i386_vec x86_64pei_vec bfd_elf64_l1om_vec i386coff_vec"
 +    want64=true
@@ -21,7 +21,7 @@ diff -ruN binutils-2.21.1-orig/config.sub binutils-2.21.1/config.sub
  	      | -sym* | -kopensolaris* \
  	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
 -	      | -aos* | -aros* \
-+	      | -aos* | -aros* | -dna* \
++	      | -aos* | -aros* | -hitomi* \
  	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
  	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
  	      | -hiux* | -386bsd* | -knetbsd* | -mirbsd* | -netbsd* \
@@ -32,7 +32,7 @@ diff -ruN binutils-2.21.1-orig/gas/configure.tgt binutils-2.21.1/gas/configure.t
    i386-*-beospe*)			fmt=coff em=pe ;;
    i386-*-beos*)				fmt=elf ;;
    i386-*-coff)				fmt=coff ;;
-+  i386-*-dna*)				fmt=elf ;;
++  i386-*-hitomi*)			fmt=elf ;;
    i386-*-elf)				fmt=elf ;;
    i386-*-kaos*)				fmt=elf ;;
    i386-*-bsd*)				fmt=aout em=386bsd ;;
@@ -43,7 +43,7 @@ diff -ruN binutils-2.21.1-orig/ld/Makefile.in binutils-2.21.1/ld/Makefile.in
  	eelf_x86_64.c \
  	eelf_x86_64_fbsd.c \
  	eelf_x86_64_sol2.c \
-+	edna_x88_64.c \
++	ehitomi_x88_64.c \
  	ehppa64linux.c \
  	emmo.c \
  	eshelf64.c \
@@ -51,7 +51,7 @@ diff -ruN binutils-2.21.1-orig/ld/Makefile.in binutils-2.21.1/ld/Makefile.in
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_fbsd.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_sol2.Po@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edna_x86_64.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ehitomi_x86_64.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/egld960.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/egld960coff.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eh8300.Po@am__quote@
@@ -59,9 +59,9 @@ diff -ruN binutils-2.21.1-orig/ld/Makefile.in binutils-2.21.1/ld/Makefile.in
    $(srcdir)/emultempl/solaris2.em \
    $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
  	${GENSCRIPTS} elf_x86_64_sol2 "$(tdir_elf_x86_64_sol2)"
-+edna_x86_64.c: $(srcdir)/emulparams/dna_x86_64.sh \
++ehitomi_x86_64.c: $(srcdir)/emulparams/hitomi_x86_64.sh \
 +  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
-+	${GENSCRIPTS} dna_x86_64 "$(tdir_dna_x86_64)"
++	${GENSCRIPTS} hitomi_x86_64 "$(tdir_hitomi_x86_64)"
  ehppa64linux.c: $(srcdir)/emulparams/hppa64linux.sh \
    $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
  	${GENSCRIPTS} hppa64linux "$(tdir_hppa64linux)"
@@ -72,15 +72,15 @@ diff -ruN binutils-2.21.1-orig/ld/configure.tgt binutils-2.21.1/ld/configure.tgt
  			targ_extra_libpath=elf_i386
  			tdir_i386linux=`echo ${targ_alias}aout | sed -e 's/x86_64/i386/'`
  			tdir_elf_i386=`echo ${targ_alias} | sed -e 's/x86_64/i386/'` ;;
-+x86_64-*-dna*)		targ_emul=dna_x86_64
++x86_64-*-hitomi*)	targ_emul=hitomi_x86_64
 +			targ_extra_emuls="elf_i386 elf_l1om"
 +			;;
  i[3-7]86-*-sysv[45]*)	targ_emul=elf_i386 ;;
  i[3-7]86-*-solaris2*)	targ_emul=elf_i386_sol2
                          targ_extra_emuls="elf_i386_ldso elf_i386 elf_x86_64_sol2 elf_x86_64 elf_l1om"
-diff -ruN binutils-2.21.1-orig/ld/emulparams/dna_x86_64.sh binutils-2.21.1/ld/emulparams/dna_x86_64.sh
---- binutils-2.21.1-orig/ld/emulparams/dna_x86_64.sh	1970-01-01 01:00:00.000000000 +0100
-+++ binutils-2.21.1/ld/emulparams/dna_x86_64.sh	2011-08-21 16:07:58.860706600 +0200
+diff -ruN binutils-2.21.1-orig/ld/emulparams/hitomi_x86_64.sh binutils-2.21.1/ld/emulparams/hitomi_x86_64.sh
+--- binutils-2.21.1-orig/ld/emulparams/hitomi_x86_64.sh	1970-01-01 01:00:00.000000000 +0100
++++ binutils-2.21.1/ld/emulparams/hitomi_x86_64.sh	2011-08-21 16:07:58.860706600 +0200
 @@ -0,0 +1,17 @@
 +SCRIPT_NAME=elf
 +ELFSIZE=64
