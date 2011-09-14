@@ -27,6 +27,7 @@ TARGET_NM      := x86_64-pc-hitomi-nm
 HOST_AR      := $(AR)
 HOST_AS      := $(AS)
 HOST_CC      := $(CC)
+HOST_GDC     := gdc
 HOST_CPP     := $(HOST_CC) -E
 HOST_CXX     := $(CXX)
 HOST_OBJCOPY := objcopy
@@ -64,14 +65,17 @@ WARNINGS_CFLAGS   += -Wbad-function-cast -Wjump-misses-init -Wmissing-prototypes
 WARNINGS_CFLAGS   += -Wnested-externs -Wstrict-prototypes
 WARNINGS_CXXFLAGS := $(WARNINGS) -Wctor-dtor-privacy -Weffc++
 WARNINGS_CXXFLAGS += -Woverloaded-virtual
+WARNINGS_DFLAGS   := -Wsign-compare -Wall -Werror
 
 TARGET_CFLAGS   := -pipe $(WARNINGS_CFLAGS) -std=gnu99
 TARGET_CXXFLAGS := -pipe $(WARNINGS_CXXFLAGS) -std=gnu++0x -fno-exceptions
 TARGET_CXXFLAGS += -fno-rtti
+TARGET_DFLAGS   := -fdebug -nostdinc $(WARNINGS_DFLAGS)
 TARGET_LDFLAGS  :=
 
 HOST_CFLAGS   := -pipe $(WARNINGS_CFLAGS) -std=gnu99
 HOST_CXXFLAGS := -pipe $(WARNINGS_CXXFLAGS) -std=gnu++0x
+HOST_DFLAGS   := -fdebug -nostdinc $(WARNINGS_DFLAGS)
 HOST_LDFLAGS  :=
 
 USE_COLORS := $(shell echo $(TERM))

@@ -33,7 +33,7 @@ distclean: clean
 	@echo "$(MSG_RM) $(DISKNAME)"
 	$(V)-$(RM) -rf $(DISKNAME)
 
-install: umount install_bootloader mount
+install:
 	@echo "$(MSG_INSTALL) $@"
 
 create: $(DISKNAME)
@@ -45,12 +45,6 @@ mount: create
 umount: create
 	@echo -n "$(MSG_UMOUNT) $(DISKNAME) $(CYELLOW)<- $(CNONE)$(DISKMOUNTPATH)/"
 	$(V)$(PYTHON) scripts/vhd-umount.py $(DISKMOUNTPATH)
-
-install_bootloader: create umount $(BUILD)/tools/writebootloader \
-$(BUILD)/loader/stage1.bin $(BUILD)/loader/stage2.bin
-	@echo "$(MSG_BOOTLOADER) $(DISKNAME) $(CRED)<- $(CNONE)stage{1,2}.bin"
-	$(V)$(BUILD)/tools/writebootloader $(DISKNAME) $(BUILD)/loader/stage1.bin \
-		$(BUILD)/loader/stage2.bin 2> /dev/null
 
 include src/module.mk
 
