@@ -38,10 +38,8 @@
 ; BS    - block size
 ; FPS   - first partition sector
 
-%assign DEBUG                       0
 %assign BUFFER1                     0x500
 %assign BUFFER2                     0x8000
-%assign LOADER_TARGET_ADDRESS       0x10000
 %define EXT2_MAGIC                  0xef53
 %define SECTOR_SIZE                 0x200
 %define SB_OFFSET                   0x02
@@ -348,36 +346,8 @@ read_sectors:
   popa
   ret
 
-%if DEBUG
-print_hex_32:
-  pusha
-  mov di, hex_out_32
-  mov eax, [hex_in_32]
-  mov si, hex_string
-  mov cx, 8   ;eight places
-.hexloop:
-  rol eax, 4   ;leftmost will
-  mov bx, ax   ; become
-  and bx, 0x0f   ; rightmost
-  mov bl, [si + bx];index into hexstr
-  mov [di], bl
-  inc di
-  dec cx
-  jnz .hexloop
-
-  mov si, hex_out_32
-  call print_string
-  popa
-  ret
-
-hex_string              db  '0123456789ABCDEF', 0
-hex_in_32               dd  0
-hex_out_32              db  '00000000', 13, 10, 0
-%endif
-
 loader_msg              db  'Loading Hitomi..', 13, 10, 0
 error_msg               db  'ERROR!', 0
-ok_msg                  db  'ok', 13, 10, 0
 loader_directory        db  'System'
 loader_filename         db  'loader'
 boot_device             db  0
