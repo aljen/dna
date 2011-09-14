@@ -147,11 +147,11 @@ load_stage2:
   call  read_sectors
 
   mov   dl, [boot_device]                 ; restore boot drive number
-  xor   ax, ax
-  mov   ds, ax                            ; zero data segment
   mov   ax, STAGE1_TARGET_ADDRESS
   add   ax, [active_partition]
   mov   si, ax                            ; set ds:si to active partition in mbr
+  xor   ax, ax
+  mov   ds, ax                            ; zero data segment
 
   ; jump to the loaded stage2 and continue from there
   xor   di, di
