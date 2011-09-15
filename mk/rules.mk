@@ -18,14 +18,19 @@ prefix-non-module-sources = $(sort $(filter $(module-dir-suffix)%,$1) \
 	$(addprefix $(module-dir-suffix), $(filter-out $(module-dir-suffix)%, \
 	$1)))
 
-# $(call source-to-build-dir, directory-list)
-source-to-build-dir = $(addprefix $(BUILD)/,$1)
+# $(call source-to-targets-dir, directory-list)
+source-to-targets-dir = $(addprefix $(TARGETS)/,$1)
+
+# $(call source-to-objects-dir, directory-list)
+source-to-objects-dir = $(addprefix $(OBJS)/,$1)
 
 # $(call source-to-object, sources-list)
-source-to-object = $(call source-to-build-dir,$(subst .c,.o,$(filter %.c,$1)) \
-	$(subst .cc,.o,$(filter %.cc,$1)) $(subst .cpp,.o,$(filter %.cpp,$1)))
+source-to-object = $(call source-to-objects-dir,$(subst .c,.o,$(filter %.c,$1))\
+	$(subst .cc,.o,$(filter %.cc,$1)) $(subst .cpp,.o,$(filter %.cpp,$1)) \
+	$(subst .d,.o,$(filter %.d,$1)))
 
-asm-to-bin = $(call source-to-build-dir,$(subst .S,.bin,$(filter %.S,$1)))
+asm-to-bin = $(call source-to-targets-dir,$(subst .S,.bin,$(filter %.S,$1)))
+asm-to-obj = $(call source-to-objects-dir,$(subst .S,.o,$(filter %.S,$1)))
 
 # $(call host-compile-c, source.c)
 define host-compile-c
@@ -46,8 +51,8 @@ endef
 # $(call host-deps-c, source.c)
 define host-deps-c
   DEPENDENCIES += $(subst .o,.deps,$(call source-to-object,$1))
-  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
-	| $(dir $(subst .o,.deps,$(call source-to-object,$1)))
+  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk \
+	mk/rules.mk | $(dir $(subst .o,.deps,$(call source-to-object,$1)))
 		@echo "$(MSG_DEPS_CC) $$@"
 		$(V)$(HOST_CC) $(HOST_CFLAGS) $(MODULE_CFLAGS) -MM -MF $$@ -MT \
 			$(call source-to-object,$1) $$<
@@ -56,8 +61,8 @@ endef
 # $(call host-deps-cxx, source.{cc,cpp})
 define host-deps-cxx
   DEPENDENCIES += $(subst .o,.deps,$(call source-to-object,$1))
-  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk mk/rules.mk\
-	| $(dir $(subst .o,.deps,$(call source-to-object,$1)))
+  $(subst .o,.deps,$(call source-to-object,$1)): $1 Makefile mk/env.mk \
+	mk/rules.mk | $(dir $(subst .o,.deps,$(call source-to-object,$1)))
 		@echo "$(MSG_DEPS_CXX) $$@"
 		$(V)$(HOST_CXX) $(HOST_CXXFLAGS) $(MODULE_CXXFLAGS) -MM -MF $$@\
 			-MT $(call source-to-object,$1) $$<
@@ -65,30 +70,32 @@ endef
 
 # $(call add-plain-bin, name, source, dependencies)
 define add-plain-bin
-  MODULE_DIRS := $(sort $(MODULE_DIRS) $(dir $(call asm-to-bin,$2)))
+  MODULE_DIRS := $(sort $(MODULE_DIRS) $(dir $(call asm-to-bin,$2)) \
+    $(dir $(call source-to-objects-dir,$2)))
 
-  $(BUILD)/$(module-dir)/$1: $2 $3 Makefile mk/env.mk mk/rules.mk |\
-	$(addprefix $(BUILD)/,$(module-dir))
+  $(TARGETS)/$(module-dir)/$1: $2 $3 Makefile mk/env.mk mk/rules.mk |\
+	$(addprefix $(TARGETS)/,$(module-dir)) $(addprefix $(OBJS)/,$(module-dir))
 		@echo "$(MSG_YASM) $$@"
 		$(V)$(YASM) -f bin -o $$@ $$<
 
   .PHONY: loader-$1
-  loader-$1: $(BUILD)/$(module-dir)/$1
+  loader-$1: $(TARGETS)/$(module-dir)/$1
 
   TARGET_LOADER += loader-$1
 endef
 
 # $(call add-tool, name, sources-list)
 define add-tool
-  MODULE_DIRS := $(sort $(MODULE_DIRS) $(dir $(call source-to-object,$2)))
+  MODULE_DIRS := $(sort $(MODULE_DIRS) $(dir $(call source-to-object,$2)) \
+    $(dir $(call source-to-targets-dir,$2)))
 
-  $(BUILD)/$(module-dir)/$1: $(call source-to-object,$2) |\
-	$(addprefix $(BUILD)/,$(module-dir))
+  $(TARGETS)/$(module-dir)/$1: $(call source-to-object,$2) |\
+	$(addprefix $(TARGETS)/,$(module-dir)) $(addprefix $(OBJS)/,$(module-dir)) 
 		@echo "$(MSG_HOST_LD) $$@"
 		$(V)$(HOST_CXX) $(HOST_CXXFLAGS) -o $$@ $$^
 
   .PHONY: tools-$1
-  tools-$1: $(BUILD)/$(module-dir)/$1
+  tools-$1: $(TARGETS)/$(module-dir)/$1
 
   HOST_APPS += tools-$1
 
@@ -155,4 +162,3 @@ print_objs_recipes:
 	@echo "$(MSG_DEPS_CC) file.deps"
 	@echo "$(MSG_DEPS_CXX) file.deps"
 	@echo "$(MSG_YASM) file.bin"
-
