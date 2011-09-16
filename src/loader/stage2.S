@@ -375,4 +375,4 @@ istruc DAP
   at DAP.lba2,          dd 0
 iend
 
-;times 1024 - ($ - $$)  db  0
+times 1024 - ($ - $$)  db  0
