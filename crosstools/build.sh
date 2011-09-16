@@ -146,7 +146,7 @@ cd build-binutils
 echo -e "  ${CCYAN}configure${CNONE}"
 ../binutils-${BINUTILS}/configure --disable-nls --prefix=$PREFIX \
 --target=$TARGET --with-gmp=$PREFIX --with-mpfr=$PREFIX --with-mpc=$PREFIX \
---disable-werror > /dev/null 2>&1 || exit 1
+--disable-werror --disable-multilib > /dev/null 2>&1 || exit 1
 echo -e "  ${CCYAN}make all${CNONE}"
 make -j${JOBS} all > /dev/null 2>&1 || exit 1
 echo -e "  ${CCYAN}make install${CNONE}"
@@ -158,7 +158,7 @@ cd build-gcc
 echo -e "  ${CCYAN}configure${CNONE}"
 ../gcc-${GCC}/configure --prefix=$PREFIX --target=$TARGET --disable-nls \
 --with-gmp=$PREFIX --with-mpfr=$PREFIX --with-mpc=$PREFIX --disable-werror \
---enable-languages=c,c++,d --without-headers \
+--enable-languages=c,c++,d --without-headers --disable-multilib \
 --enable-linker-build-id --enable-clocale=gnu --enable-plugin --enable-gold \
 --enable-ld=default --with-plugin-ld=ld.gold > /dev/null 2>&1  || exit 1
 echo -e "  ${CCYAN}make all-gcc${CNONE}"
