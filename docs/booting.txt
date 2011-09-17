@@ -1,0 +1,23 @@
+Hitomi boot process is divided in 3 stages.
+
+First stage (src/loader/stage1.S) is 512 bytes long and is placed in MBR. It's
+goal is to find an active partition and load first two sectors from it (stage2).
+
+Second stage (src/loader/stage2.S) is 1024 bytes long and is placed in VBR. It's
+goal is to check if partition from which it is booted is a valid ext2 filesystem
+and load /System/loader from it.
+
+Third stage is an actual kernel loader and it's located in /System/loader.
+Since compilers can't produce 16 bits code, it's divided into two parts.
+First part (src/loader/bootstrap.S) - glue code - is a 16 bit assembly code,
+resides at 0x8000 - 0x81FF. It sets temporary GDT, enables 32 bit protected
+mode, sets code and data segments and jumps into 0x8200.
+Second part contains 32 bit assembly code (src/loader/boot.S), resides at 0x8200
+and it's main job is to set up stack, call c++/d constructors and call main
+function from actual loader written in D language (src/loader/main.d).
+
+Third stage is constructed by assembling first part as plain binary, then
+second part is compiled as an elf file, objcopy is called to convert format
+from elf to plain binary and at the end glue code (first part) is merged with
+actual loader using simple `cat bootstrap.bin loader.bin > loader` command.
+
