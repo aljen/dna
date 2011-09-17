@@ -158,15 +158,36 @@ cd build-gcc
 echo -e "  ${CCYAN}configure${CNONE}"
 ../gcc-${GCC}/configure --prefix=$PREFIX --target=$TARGET --disable-nls \
 --with-gmp=$PREFIX --with-mpfr=$PREFIX --with-mpc=$PREFIX --disable-werror \
---enable-languages=c,c++,d --without-headers --disable-multilib \
+--enable-languages=c,c++,d --disable-multilib --disable-shared \
 --enable-linker-build-id --enable-clocale=gnu --enable-plugin --enable-gold \
 --enable-ld=default --with-plugin-ld=ld.gold > /dev/null 2>&1  || exit 1
 echo -e "  ${CCYAN}make all-gcc${CNONE}"
 make -j${JOBS} all-gcc > /dev/null 2>&1 || exit 1
 echo -e "  ${CCYAN}make install-gcc${CNONE}"
 sudo make install-gcc > /dev/null 2>&1 || exit 1
+cd ..
+
+echo -e "${CYELLOW}Building ${CGREEN}newlib-${NEWLIB}${CNONE}"
+cd build-newlib
+echo -e "  ${CCYAN}configure${CNONE}"
+../newlib-${NEWLIB}/configure --prefix=$PREFIX --target=$TARGET --disable-nls \
+--with-gmp=$PREFIX --with-mpfr=$PREFIX --with-mpc=$PREFIX --disable-werror \
+--enable-newlib-hw-fp > /dev/null 2>&1  || exit 1
+echo -e "  ${CCYAN}make${CNONE}"
+make -j${JOBS} all > /dev/null 2>&1 || exit 1
+echo -e "  ${CCYAN}make install${CNONE}"
+sudo make install > /dev/null 2>&1 || exit 1
+cd ..
+
+echo -e "${CYELLOW}Building ${CGREEN}gcc-${GCC}${CNONE}"
+cd build-gcc
 echo -e "  ${CCYAN}make all-target-libgcc${CNONE}"
 make -j${JOBS} all-target-libgcc > /dev/null 2>&1 || exit 1
 echo -e "  ${CCYAN}make install-target-libgcc${CNONE}"
 sudo make install-target-libgcc > /dev/null 2>&1 || exit 1
+echo -e "  ${CCYAN}make all-target-libstdc++-v3${CNONE}"
+make -j${JOBS} all-target-libstdc++-v3 > /dev/null 2>&1 || exit 1
+echo -e "  ${CCYAN}make install-target-libstdc++-v3${CNONE}"
+sudo make install-target-libstdc++-v3 > /dev/null 2>&1 || exit 1
+cd ..
 
