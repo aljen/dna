@@ -1,0 +1,9 @@
+loader:
+* enable A20 line
+* detect available memory & memory maps
+* check if cpu is 64 bit
+* enable long mode
+* convert to 64 bits
+* implement support for Hitomi in d runtime (libphobos) as stubs for now, so i 
+  can use x86_64-pc-hitomi-gdc instead of host's gdc
+
