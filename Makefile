@@ -16,11 +16,9 @@ include mk/rules.mk
 .PHONY: clean distclean install help mount umount install_bootloader
 .PHONY: print_objs_recipes
 
-#.NOTPARALLEL: create mount umount
-
 .DEFAULT_GOAL := all
 
-all: create all-apps all-drivers all-kernel all-loader all-servers all-tools
+all: create all-targets
 
 clean:
 	@echo "$(MSG_RM) $(BUILD)/"
@@ -50,12 +48,16 @@ umount: create
 
 include src/module.mk
 
+$(eval $(call create-directories))
+
 all-apps: $(TARGET_APPS)
 all-drivers: $(TARGET_DRIVERS)
 all-kernel: $(TARGET_KERNEL)
 all-loader: $(TARGET_LOADER)
 all-servers: $(TARGET_SERVERS)
 all-tools: $(HOST_APPS)
+all-targets: $(ALL_TARGETS)
+install: umount install-loader mount
 
 -include $(DEPENDENCIES)
 

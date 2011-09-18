@@ -15,13 +15,15 @@ DISKMOUNTPATH  := mnt
 TARGET_AR      := x86_64-pc-hitomi-ar
 TARGET_AS      := x86_64-pc-hitomi-as
 TARGET_CC      := x86_64-pc-hitomi-gcc
-TARGET_GDC     := x86_64-pc-hitomi-gdc
+TARGET_GDC     := gdc
+#x86_64-pc-hitomi-gdc
 TARGET_CPP     := $(TARGET_CC) -E
 TARGET_CXX     := x86_64-pc-hitomi-g++
 TARGET_LD      := x86_64-pc-hitomi-ld
 TARGET_LIBGCC  := $(shell $(TARGET_CC) -print-libgcc-file-name)
 TARGET_OBJCOPY := x86_64-pc-hitomi-objcopy
 TARGET_OBJDUMP := x86_64-pc-hitomi-objdump
+TARGET_RANLIB  := x86_64-pc-hitomi-ranlib
 TARGET_NM      := x86_64-pc-hitomi-nm
 
 HOST_AR      := $(AR)
@@ -32,6 +34,7 @@ HOST_CPP     := $(HOST_CC) -E
 HOST_CXX     := $(CXX)
 HOST_OBJCOPY := objcopy
 HOST_OBJDUMP := objdump
+HOST_RANLIB  := ranlib
 HOST_NM      := nm
 
 PYTHON  := python
@@ -39,15 +42,16 @@ TAR     := tar
 INSTALL := install
 YASM    := yasm
 
-HOST_APPS      :=
-TARGET_APPS    :=
-TARGET_DRIVERS :=
-TARGET_KERNEL  :=
-TARGET_LOADER  :=
-TARGET_SERVERS :=
-TARGET_LIBS    :=
+HOST_APPS       :=
+TARGET_APPS     :=
+TARGET_DRIVERS  :=
+TARGET_KERNEL   :=
+TARGET_LOADER   :=
+TARGET_SERVERS  :=
+TARGET_LIBS     :=
+ALL_TARGETS     :=
 
-WARNINGS := -pedantic -Werror -Wall -Wextra -Wdouble-promotion
+WARNINGS := -pedantic -Wall -Wextra -Wdouble-promotion
 WARNINGS += -Wformat=2 -Wno-format-extra-args -Wuninitialized
 WARNINGS += -Winit-self -Wmissing-include-dirs -Wswitch-default
 WARNINGS += -Wswitch-enum -Wunused-but-set-parameter
@@ -65,17 +69,17 @@ WARNINGS_CFLAGS   += -Wbad-function-cast -Wjump-misses-init -Wmissing-prototypes
 WARNINGS_CFLAGS   += -Wnested-externs -Wstrict-prototypes
 WARNINGS_CXXFLAGS := $(WARNINGS) -Wctor-dtor-privacy -Weffc++
 WARNINGS_CXXFLAGS += -Woverloaded-virtual
-WARNINGS_DFLAGS   := -Wsign-compare -Wall -Werror
+WARNINGS_DFLAGS   := -Wsign-compare -Wall
 
-TARGET_CFLAGS   := -pipe $(WARNINGS_CFLAGS) -std=gnu99
-TARGET_CXXFLAGS := -pipe $(WARNINGS_CXXFLAGS) -std=gnu++0x -fno-exceptions
+TARGET_CFLAGS   := -pipe -std=gnu99
+TARGET_CXXFLAGS := -pipe -std=gnu++0x -fno-exceptions
 TARGET_CXXFLAGS += -fno-rtti
-TARGET_DFLAGS   := -fdebug -nostdinc $(WARNINGS_DFLAGS)
+TARGET_DFLAGS   := -m32 -fdebug -nostdlib -nodefaultlibs -g
 TARGET_LDFLAGS  :=
 
-HOST_CFLAGS   := -pipe $(WARNINGS_CFLAGS) -std=gnu99
-HOST_CXXFLAGS := -pipe $(WARNINGS_CXXFLAGS) -std=gnu++0x
-HOST_DFLAGS   := -fdebug -nostdinc $(WARNINGS_DFLAGS)
+HOST_CFLAGS   := -pipe -std=gnu99
+HOST_CXXFLAGS := -pipe -std=gnu++0x
+HOST_DFLAGS   := -fdebug -nostdinc
 HOST_LDFLAGS  :=
 
 USE_COLORS := $(shell echo $(TERM))
@@ -112,11 +116,15 @@ MSG_UMOUNT     := $(CWHITE)[    $(CYELLOW)UMOUNT$(CWHITE)]$(CNONE)
 MSG_HOST_AS    := $(CWHITE)[$(CBLUE)HOST    $(CCYAN)AS$(CWHITE)]$(CNONE)
 MSG_HOST_CC    := $(CWHITE)[$(CBLUE)HOST    $(CGREEN)CC$(CWHITE)]$(CNONE)
 MSG_HOST_CXX   := $(CWHITE)[$(CBLUE)HOST   $(CGREEN)CXX$(CWHITE)]$(CNONE)
+MSG_HOST_D     := $(CWHITE)[$(CBLUE)HOST     $(CGREEN)D$(CWHITE)]$(CNONE)
 MSG_HOST_LD    := $(CWHITE)[$(CBLUE)HOST    $(CRED)LD$(CWHITE)]$(CNONE)
+MSG_HOST_LIB   := $(CWHITE)[$(CBLUE)HOST   $(CRED)LIB$(CWHITE)]$(CNONE)
 MSG_TARGET_AS  := $(CWHITE)[$(CPURPLE)TARGET  $(CCYAN)AS$(CWHITE)]$(CNONE)
 MSG_TARGET_CC  := $(CWHITE)[$(CPURPLE)TARGET  $(CGREEN)CC$(CWHITE)]$(CNONE)
 MSG_TARGET_CXX := $(CWHITE)[$(CPURPLE)TARGET $(CGREEN)CXX$(CWHITE)]$(CNONE)
+MSG_TARGET_D   := $(CWHITE)[$(CPURPLE)TARGET   $(CGREEN)D$(CWHITE)]$(CNONE)
 MSG_TARGET_LD  := $(CWHITE)[$(CPURPLE)TARGET  $(CRED)LD$(CWHITE)]$(CNONE)
+MSG_TARGET_LIB := $(CWHITE)[$(CPURPLE)TARGET $(CRED)LIB$(CWHITE)]$(CNONE)
 MSG_DEPS_CC    := $(CWHITE)[$(CYELLOW)DEPS    $(CGREEN)CC$(CWHITE)]$(CNONE)
 MSG_DEPS_CXX   := $(CWHITE)[$(CYELLOW)DEPS   $(CGREEN)CXX$(CWHITE)]$(CNONE)
 MSG_YASM       := $(CWHITE)[$(CBLUE)      $(CCYAN)YASM$(CWHITE)]$(CNONE)
