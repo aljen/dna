@@ -25,4 +25,3 @@ install-loader: create umount write_bootloader stage1.bin stage2.bin
 	@echo "$(MSG_BOOTLOADER) $(DISKNAME) $(CRED)<- $(CNONE)stage{1,2}.bin"
 	$(V)$(MODULE_write_bootloader) $(DISKNAME) $(MODULE_stage1.bin) \
 		$(MODULE_stage2.bin) 2> /dev/null
-

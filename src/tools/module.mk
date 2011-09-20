@@ -13,4 +13,3 @@ MODULE_SOURCES := $(addprefix tools/,$(MODULE_SOURCES))
 MODULE_CFLAGS := $(WARNINGS_CFLAGS) -Werror
 MODULE_CXXFLAGS := $(WARNINGS_CXXFLAGS) -Werror
 $(eval $(call add-host-module))
-
