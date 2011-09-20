@@ -53,6 +53,7 @@ static_ctors_loop:                        ; call c++/d ctors
   jb    .body
 
   call  main
+  call  cpu_hang
 
 static_dtors_loop:                        ; call c++/d dtors
   mov   ebx, start_dtors
