@@ -36,6 +36,24 @@ use16
 org 0x8000
 
 start16:
+  jmp   continue16
+
+%include 'utils.inc'
+
+error16:
+  push  si
+  mov   si, error_msg
+  call  print_string
+  pop   si
+  call  print_string
+  call  cpu_hang16
+
+cpu_hang16:                               ; hang with infinite loop
+.hang:
+  hlt
+  jmp   .hang
+
+continue16:
   cli                                     ; disable interrupts
 
   xor   ax, ax
@@ -43,6 +61,30 @@ start16:
   mov   es, ax
   mov   fs, ax
   mov   gs, ax
+
+  ; check if cpu is 64bit
+  mov   eax, 0x80000000                   ; get highest extended funcion
+  cpuid
+  cmp   eax, 0x80000000                   ; fail if it's <= 0x80000000
+  jbe   error16
+  mov   eax, 0x80000001                   ; get ext. processor info & features
+  cpuid
+  bt    edx, 29                           ; is long mode available?
+  mov   si, error_long_mode_msg
+  jnc   error16
+
+  ; enable a20 - bios
+  mov   ax, 0x2401                        ; function 0x2401 - enable a20
+  int   0x15
+  jnc   .a20_enabled
+
+  mov   si, error_a20_msg
+  call  error16
+
+.a20_enabled:
+  mov   eax, cr0
+  and   eax, 0x7fffffff                   ; first, disable paging
+  mov   cr0, eax
 
   ; load gdt
   lgdt  [gdt]
@@ -79,18 +121,18 @@ gdt:
   dw    gdt - gdt_data - 1
   dd    gdt_data
 
+error_msg           db  'ERROR: ', 0
+error_a20_msg       db  'Cant enable A20!', 13, 10, 0
+error_long_mode_msg db  'CPU is not compatible with 64bit mode!', 13, 10, 0
 
 align 4                                   ; align to page
 use32
-cpu_hang32:                               ; hang with infinite loop
-.hang:
-  hlt
-  jmp   .hang
-
 start32:
   mov   ax, 0x10
   mov   ds, ax
   mov   es, ax
+  mov   fs, ax
+  mov   gs, ax
   mov   ss, ax
 
   jmp   LOADER_START
