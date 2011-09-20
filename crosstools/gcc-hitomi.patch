@@ -1,6 +1,6 @@
 diff -ruN gcc-4.6.1-orig/config.sub gcc-4.6.1/config.sub
 --- gcc-4.6.1-orig/config.sub	2010-05-25 15:22:07.000000000 +0200
-+++ gcc-4.6.1/config.sub	2011-08-22 17:50:43.191602900 +0200
++++ gcc-4.6.1/config.sub	2011-09-18 22:33:48.484664873 +0200
 @@ -1297,7 +1297,7 @@
  	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
  	      | -sym* | -kopensolaris* \
@@ -22,8 +22,8 @@ diff -ruN gcc-4.6.1-orig/config.sub gcc-4.6.1/config.sub
  		;;
 diff -ruN gcc-4.6.1-orig/gcc/config/hitomi.h gcc-4.6.1/gcc/config/hitomi.h
 --- gcc-4.6.1-orig/gcc/config/hitomi.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.6.1/gcc/config/hitomi.h	2011-08-22 21:31:31.214346500 +0200
-@@ -0,0 +1,13 @@
++++ gcc-4.6.1/gcc/config/hitomi.h	2011-09-18 22:34:14.514664221 +0200
+@@ -0,0 +1,18 @@
 +#undef TARGET_OS_CPP_BUILTINS
 +#define TARGET_OS_CPP_BUILTINS()          \
 +    do {                                  \
@@ -33,13 +33,18 @@ diff -ruN gcc-4.6.1-orig/gcc/config/hitomi.h gcc-4.6.1/gcc/config/hitomi.h
 +        builtin_define ("__x86_64__");    \
 +        builtin_assert ("system=hitomi"); \
 +        builtin_assert ("system=unix");   \
++        builtin_assert ("system=posix");  \
 +    } while(0);
 +
 +#undef TARGET_VERSION
 +#define TARGET_VERSION fprintf(stderr, " (x86_64 Hitomi/ELF)");
++
++#undef CPP_SPEC
++#define CPP_SPEC "%{posix:-D_POSIX_SOURCE} %{pthread:-D_POSIX_THREADS -D_REENTRANT}"
++
 diff -ruN gcc-4.6.1-orig/gcc/config.gcc gcc-4.6.1/gcc/config.gcc
 --- gcc-4.6.1-orig/gcc/config.gcc	2011-05-22 22:03:43.000000000 +0200
-+++ gcc-4.6.1/gcc/config.gcc	2011-08-22 17:55:02.792451300 +0200
++++ gcc-4.6.1/gcc/config.gcc	2011-09-18 22:33:48.484664873 +0200
 @@ -694,6 +694,12 @@
      *) echo 'Unknown thread configuration for VxWorks'; exit 1 ;;
    esac
@@ -66,7 +71,7 @@ diff -ruN gcc-4.6.1-orig/gcc/config.gcc gcc-4.6.1/gcc/config.gcc
  	tmake_file="${tmake_file} i386/t-crtstuff"
 diff -ruN gcc-4.6.1-orig/libgcc/config.host gcc-4.6.1/libgcc/config.host
 --- gcc-4.6.1-orig/libgcc/config.host	2011-03-14 07:06:23.000000000 +0100
-+++ gcc-4.6.1/libgcc/config.host	2011-08-22 20:00:32.208109200 +0200
++++ gcc-4.6.1/libgcc/config.host	2011-09-18 22:33:48.484664873 +0200
 @@ -281,6 +281,8 @@
  	;;
  x86_64-*-elf*)
@@ -77,8 +82,8 @@ diff -ruN gcc-4.6.1-orig/libgcc/config.host gcc-4.6.1/libgcc/config.host
  	tmake_file="${tmake_file} i386/t-freebsd"
  	;;
 diff -ruN gcc-4.6.1-orig/libstdc++-v3/configure gcc-4.6.1/libstdc++-v3/configure
---- gcc-4.6.1-orig/libstdc++-v3/configure	2011-09-16 13:29:41.844827462 +0200
-+++ gcc-4.6.1/libstdc++-v3/configure	2011-09-16 12:26:55.504771313 +0200
+--- gcc-4.6.1-orig/libstdc++-v3/configure	2011-05-26 02:15:58.000000000 +0200
++++ gcc-4.6.1/libstdc++-v3/configure	2011-09-18 22:33:48.514664873 +0200
 @@ -44230,6 +44230,5880 @@
  
      fi
@@ -5961,8 +5966,8 @@ diff -ruN gcc-4.6.1-orig/libstdc++-v3/configure gcc-4.6.1/libstdc++-v3/configure
      SECTION_FLAGS='-ffunction-sections -fdata-sections'
  
 diff -ruN gcc-4.6.1-orig/libstdc++-v3/crossconfig.m4 gcc-4.6.1/libstdc++-v3/crossconfig.m4
---- gcc-4.6.1-orig/libstdc++-v3/crossconfig.m4	2011-09-16 13:29:41.394827457 +0200
-+++ gcc-4.6.1/libstdc++-v3/crossconfig.m4	2011-09-16 12:26:33.694770986 +0200
+--- gcc-4.6.1-orig/libstdc++-v3/crossconfig.m4	2011-02-04 08:26:57.000000000 +0100
++++ gcc-4.6.1/libstdc++-v3/crossconfig.m4	2011-09-18 22:33:48.544664871 +0200
 @@ -99,6 +99,43 @@
        AC_DEFINE(HAVE_ISNANL)
      fi
