@@ -66,6 +66,7 @@ continue16:
   mov   eax, 0x80000000                   ; get highest extended funcion
   cpuid
   cmp   eax, 0x80000000                   ; fail if it's <= 0x80000000
+  mov   si, error_long_mode_msg
   jbe   error16
   mov   eax, 0x80000001                   ; get ext. processor info & features
   cpuid
