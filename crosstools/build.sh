@@ -56,9 +56,6 @@ wget -cq http://ftp.gnu.org/gnu/gcc/gcc-4.6.1/gcc-g++-${GCC}.tar.bz2 || exit 1
 echo -e "${CYELLOW}Downloading ${CGREEN}newlib-${NEWLIB}${CNONE}"
 wget -cq ftp://sources.redhat.com/pub/newlib/newlib-${NEWLIB}.tar.gz || exit 1
 
-echo -e "${CYELLOW}Cloning ${CGREEN}gdc ${CYELLOW}repository${CNONE}"
-hg clone https://bitbucket.org/goshawk/gdc > /dev/null || exit 1
-
 echo -e "${CYELLOW}Unpacking ${CGREEN}gmp-${GMP}${CNONE}"
 tar jxf gmp-${GMP}.tar.bz2 || exit 1
 rm gmp-${GMP}.tar.bz2 || exit 1
@@ -95,18 +92,11 @@ cd ..
 echo -e "${CYELLOW}Patching ${CGREEN}gcc-${GCC}${CNONE}"
 cd gcc-${GCC}
 patch -p1 < ../../gcc-hitomi.patch > /dev/null || exit 1
-ln -s ../../gdc/d gcc/d
-./gcc/d/setup-gcc.sh > /dev/null || exit 1
 cd ..
 
 echo -e "${CYELLOW}Patching ${CGREEN}newlib-${NEWLIB}${CNONE}"
 cd newlib-${NEWLIB}
 patch -p1 < ../../newlib-hitomi.patch > /dev/null || exit 1
-cd ..
-
-echo -e "${CYELLOW}Patching ${CGREEN}gdc${CNONE}"
-cd gdc
-patch -p1 < ../../gdc-hitomi.patch > /dev/null || exit 1
 cd ..
 
 echo -e "${CYELLOW}Building ${CGREEN}gmp-${GMP}${CNONE}"
@@ -158,7 +148,7 @@ cd build-gcc
 echo -e "  ${CCYAN}configure${CNONE}"
 ../gcc-${GCC}/configure --prefix=$PREFIX --target=$TARGET --disable-nls \
 --with-gmp=$PREFIX --with-mpfr=$PREFIX --with-mpc=$PREFIX --disable-werror \
---enable-languages=c,c++,d --disable-multilib --disable-shared \
+--enable-languages=c,c++ --disable-multilib --disable-shared \
 --enable-linker-build-id --enable-clocale=gnu --enable-plugin --enable-gold \
 --enable-ld=default --with-plugin-ld=ld.gold > /dev/null 2>&1  || exit 1
 echo -e "  ${CCYAN}make all-gcc${CNONE}"
